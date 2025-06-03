@@ -1,0 +1,103 @@
+﻿@model RuhsaProject.DTOs.RoleDtos.RoleListDto
+
+@{
+    ViewData["Title"] = "Rol Listesi";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-end mb-3">
+            <a asp-action="Create" class="btn btn-label-primary">
+                <i class="ti ti-plus me-1"></i> Yeni Rol
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm datatables-basic w-100">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Rol Adı</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Roles != null && Model.Roles.Count > 0)
+                    {
+                        int index = 1;
+                        foreach (var role in Model.Roles)
+                        {
+                            <tr>
+                                <td>@index</td>
+                                <td>@role.Name</td>
+                                <td>
+                                    <a asp-action="Delete" asp-route-id="@role.Id" class="btn btn-sm btn-icon btn-label-danger">
+                                        <i class="ti ti-trash-filled"></i>
+                                    </a>
+                                    <!-- Buraya İzin Ata butonu eklendi -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary btn-assign-permissions ms-1"
+                                            data-roleid="@role.Id"
+                                            data-rolename="@role.Name">
+                                        İzin Ata
+                                    </button>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.datatables-basic').DataTable({
+                scrollX: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json'
+                },
+                dom: 't<"row mx-2 mt-2"<"col-md-6"l><"col-md-6 d-flex justify-content-end"p>>'
+            });
+
+            // İzin Ata butonuna tıklanınca partial view'i modal ile aç
+            $('.btn-assign-permissions').click(function () {
+                var roleId = $(this).data('roleid');
+                var url = '/Role/AssignPermissions?roleId=' + roleId;
+
+                $.get(url, function (data) {
+                    $('#assignPermissionsModalContent').html(data);
+                    $('#assignPermissionsModal').modal('show');
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        table.datatables-basic td,
+        table.datatables-basic th {
+            font-size: 12px !important;
+            padding: 0.3rem 0.5rem !important;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            font-size: 12px !important;
+        }
+
+        .btn-sm {
+            font-size: 12px !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+
+        .ms-1 {
+            margin-left: 0.25rem !important;
+        }
+    </style>
+}

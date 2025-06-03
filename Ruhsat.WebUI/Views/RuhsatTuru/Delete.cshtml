@@ -1,0 +1,29 @@
+@model RuhsaProject.DTOs.RuhsatTuruDtos.RuhsatTuruDto
+
+@{
+    ViewData["Title"] = "Ruhsat Türü Sil";
+}
+
+<h4 class="fw-bold py-3 mb-4 text-danger">Ruhsat Türü Sil</h4>
+
+<div class="card border border-danger">
+    <div class="card-body">
+        <h5 class="card-title text-danger">Bu ruhsat türünü silmek istediğinize emin misiniz?</h5>
+
+        <dl class="row mt-3">
+            <dt class="col-sm-3">ID</dt>
+            <dd class="col-sm-9">@Model.Id</dd>
+
+            <dt class="col-sm-3">Ruhsat Türü Adı</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+        </dl>
+
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">
+                <i class="ti ti-trash"></i> Sil
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary ms-2">İptal</a>
+        </form>
+    </div>
+</div> 

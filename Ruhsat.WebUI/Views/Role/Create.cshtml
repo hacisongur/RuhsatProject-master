@@ -1,0 +1,28 @@
+﻿@model RuhsaProject.DTOs.RoleDtos.RoleAddDto
+
+@{
+    ViewData["Title"] = "Yeni Rol Ekle";
+}
+
+<h4 class="fw-bold py-3 mb-4">Yeni Rol Tanımla</h4>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="ti ti-check me-1"></i> Kaydet
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary ms-2">İptal</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr"
+      class="light-style layout-wide customizer-hide"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="/vuexy-bootstrap-html-admin-template/assets/"
+      data-template="vertical-menu-template"
+      data-style="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>401 Yetkisiz Erişim - RuhsatProject</title>
+    <meta name="description" content="401 Yetkisiz erişim" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/vuexy-bootstrap-html-admin-template/assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="/vuexy-bootstrap-html-admin-template/assets/vendor/fonts/fontawesome.css" />
+    <link rel="stylesheet" href="/vuexy-bootstrap-html-admin-template/assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="/vuexy-bootstrap-html-admin-template/assets/vendor/fonts/flag-icons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="/vuexy-bootstrap-html-admin-template/assets/vendor/css/rtl/core.css" />
+    <link rel="stylesheet" href="/vuexy-bootstrap-html-admin-template/assets/vendor/css/rtl/theme-default.css" />
+    <link rel="stylesheet" href="/vuexy-bootstrap-html-admin-template/assets/css/demo.css" />
+
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="/vuexy-bootstrap-html-admin-template/assets/vendor/css/pages/page-misc.css" />
+
+    <!-- Helpers -->
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/js/helpers.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/js/config.js"></script>
+</head>
+
+<body>
+    <!-- Content -->
+    <div class="container-xxl container-p-y">
+        <div class="misc-wrapper text-center">
+            <h1 class="mb-2" style="font-size: 6rem;">401</h1>
+            <h4 class="mb-2">Yetkisiz Erişim! 🔐</h4>
+            <p class="mb-4">Bu sayfaya erişim izniniz bulunmamaktadır.</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Anasayfaya Dön</a>
+            <div class="mt-4">
+                <img src="/vuexy-bootstrap-html-admin-template/assets/img/illustrations/page-misc-you-are-not-authorized.png"
+                     alt="Yetkisiz Giriş"
+                     width="220"
+                     class="img-fluid" />
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid misc-bg-wrapper">
+        <img src="/vuexy-bootstrap-html-admin-template/assets/img/illustrations/bg-shape-image-light.png"
+             height="355"
+             alt="arka plan"
+             data-app-light-img="illustrations/bg-shape-image-light.png"
+             data-app-dark-img="illustrations/bg-shape-image-dark.png" />
+    </div>
+
+    <!-- Core JS -->
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/js/bootstrap.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/libs/node-waves/node-waves.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/libs/hammer/hammer.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/libs/i18n/i18n.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/libs/typeahead-js/typeahead.js"></script>
+    <script src="/vuexy-bootstrap-html-admin-template/assets/vendor/js/menu.js"></script>
+
+    <!-- Main JS -->
+    <script src="/vuexy-bootstrap-html-admin-template/assets/js/main.js"></script>
+</body>
+</html>

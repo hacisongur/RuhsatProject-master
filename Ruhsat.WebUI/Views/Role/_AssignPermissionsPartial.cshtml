@@ -1,0 +1,29 @@
+﻿@model RuhsaProject.DTOs.RoleDtos.RolePermissionAssignDto
+
+<form asp-action="AssignPermissions" asp-controller="Role" method="post">
+    <input type="hidden" asp-for="RoleId" />
+
+    <div class="modal-header">
+        <h5 class="modal-title">İzin Atama - @Model.RoleName</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="list-group">
+            @for (int i = 0; i < Model.PermissionAssignDtos.Count; i++)
+            {
+                <input type="hidden" asp-for="PermissionAssignDtos[@i].PermissionId" />
+                <input type="hidden" asp-for="PermissionAssignDtos[@i].PermissionName" />
+                <label class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>@Model.PermissionAssignDtos[i].PermissionName</span>
+                    <input type="checkbox" asp-for="PermissionAssignDtos[@i].HasPermission" class="form-check-input" />
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+    </div>
+</form>

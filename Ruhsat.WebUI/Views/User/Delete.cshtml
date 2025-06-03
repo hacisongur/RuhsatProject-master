@@ -1,0 +1,51 @@
+﻿@model RuhsaProject.DTOs.UserDtos.UserDto
+
+@{
+    ViewData["Title"] = "Kullanıcıyı Sil";
+}
+
+<div class="container py-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="ti ti-alert-triangle me-2"></i>
+                Kullanıcıyı Sil
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning" role="alert">
+                <strong>@Model.UserName</strong> adlı kullanıcıyı silmek üzeresiniz. Bu işlem geri alınamaz. Emin misiniz?
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 text-center">
+                    <img src="@Model.Picture" class="img-fluid rounded shadow" style="max-height: 150px;" alt="Profil Resmi" />
+                </div>
+                <div class="col-md-9">
+                    <dl class="row">
+                        <dt class="col-sm-4">Kullanıcı Adı</dt>
+                        <dd class="col-sm-8">@Model.UserName</dd>
+
+                        <dt class="col-sm-4">E-Posta</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4">Telefon</dt>
+                        <dd class="col-sm-8">@Model.PhoneNumber</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <form asp-action="DeleteConfirmed" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="text-end">
+                    <a asp-action="Index" class="btn btn-secondary me-2">
+                        <i class="ti ti-arrow-left"></i> Geri Dön
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="ti ti-trash"></i> Kalıcı Olarak Sil
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

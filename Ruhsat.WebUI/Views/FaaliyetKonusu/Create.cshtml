@@ -1,0 +1,30 @@
+@model RuhsaProject.DTOs.FaaliyetKonusuDtos.FaaliyetKonusuDto
+
+@{
+    ViewData["Title"] = "Yeni Faaliyet Konusu Ekle";
+}
+
+<h4 class="fw-bold py-3 mb-4">Yeni Faaliyet Konusu Tanımla</h4>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Faaliyet Konusu Adı</label>
+                <input asp-for="Name" class="form-control" placeholder="Faaliyet konusu adını giriniz" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="ti ti-check me-1"></i> Kaydet
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+                <i class="ti ti-arrow-left me-1"></i> Geri Dön
+            </a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,219 @@
+﻿@model RuhsatProject.DTOs.Ruhsat.RuhsatDto
+
+@{
+    ViewData["Title"] = "Ruhsat Güncelle";
+}
+
+<div class="container py-4">
+    <div class="card mb-4 shadow-lg">
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="needs-validation"
+                        novalidate>
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Fotoğraf Yükleme Alanı -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                <img src="@(!string.IsNullOrEmpty(Model.PhotoPath) ? Model.PhotoPath : "~/assets/img/avatars/default-avatar.png")"
+                                    alt="Fotoğraf Önizleme" class="d-block w-px-100 h-px-100 rounded"
+                                    id="uploadedPhotoPreview" />
+                                <div class="button-wrapper">
+                                    <label for="upload" class="btn btn-primary me-3 mb-3" tabindex="0">
+                                        <span class="d-none d-sm-block">Yeni Fotoğraf Yükle</span>
+                                        <i class="ti ti-upload d-block d-sm-none"></i>
+                                        <input type="file" id="upload" name="photoFile" class="account-file-input"
+                                            hidden accept="image/png, image/jpeg" />
+                                    </label>
+                                    <button type="button" class="btn btn-label-secondary account-image-reset mb-3">
+                                        <i class="ti ti-refresh-dot d-block d-sm-none"></i>
+                                        <span class="d-none d-sm-block">Sıfırla</span>
+                                    </button>
+                                    <div>Yalnızca JPG, JPEG veya PNG. Maksimum boyut 800KB.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Diğer Alanlar -->
+                        <div class="row">
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="RuhsatNo" class="form-label"></label>
+                                <input asp-for="RuhsatNo" class="form-control" />
+                                <span asp-validation-for="RuhsatNo" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="VerilisTarihi" class="form-label"></label>
+                                <input asp-for="VerilisTarihi" type="date" class="form-control" />
+                                <span asp-validation-for="VerilisTarihi" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="TcKimlikNo" class="form-label"></label>
+                                <input asp-for="TcKimlikNo" class="form-control" maxlength="11" />
+                                <span asp-validation-for="TcKimlikNo" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="Adi" class="form-label"></label>
+                                <input asp-for="Adi" class="form-control" />
+                                <span asp-validation-for="Adi" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="Soyadi" class="form-label"></label>
+                                <input asp-for="Soyadi" class="form-control" />
+                                <span asp-validation-for="Soyadi" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="IsyeriUnvani" class="form-label"></label>
+                                <input asp-for="IsyeriUnvani" class="form-control" />
+                                <span asp-validation-for="IsyeriUnvani" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="FaaliyetKonusuId" class="form-label">Faaliyet Konusu</label>
+                                <select asp-for="FaaliyetKonusuId" class="form-select"
+                                    asp-items="ViewBag.FaaliyetKonulari">
+                                    <option value="">-- Faaliyet Konusu Seçiniz --</option>
+                                </select>
+                                <span asp-validation-for="FaaliyetKonusuId" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="RuhsatTuruId" class="form-label">Ruhsat Türü</label>
+                                <select asp-for="RuhsatTuruId" class="form-select" asp-items="ViewBag.RuhsatTurleri"
+                                    onchange="toggleRuhsatSinifiDiv(this.value)">
+                                    <option value="">-- Ruhsat Türü Seçiniz --</option>
+                                </select>
+                                <span asp-validation-for="RuhsatTuruId" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6" id="ruhsatSinifiDiv" style="display: none;"> @* Başlangıçta gizle *@
+                                <label asp-for="RuhsatSinifiId" class="form-label">Ruhsat Sınıfı</label>
+                                <select asp-for="RuhsatSinifiId" class="form-select"
+                                    asp-items="ViewBag.RuhsatSiniflari">
+                                    <option value="">-- Ruhsat Sınıfı Seçiniz --</option>
+                                </select>
+                                <span asp-validation-for="RuhsatSinifiId" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="Adres" class="form-label"></label>
+                                <input asp-for="Adres" class="form-control" />
+                                <span asp-validation-for="Adres" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="Ada" class="form-label"></label>
+                                <input asp-for="Ada" class="form-control" />
+                                <span asp-validation-for="Ada" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="Parsel" class="form-label"></label>
+                                <input asp-for="Parsel" class="form-control" />
+                                <span asp-validation-for="Parsel" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="Pafta" class="form-label"></label>
+                                <input asp-for="Pafta" class="form-control" />
+                                <span asp-validation-for="Pafta" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-12">
+                                <label asp-for="Not" class="form-label"></label>
+                                <textarea asp-for="Not" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Not" class="text-danger"></span>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-md-6 d-flex align-items-center">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsActive" />
+                                        <label class="form-check-label ms-2" asp-for="IsActive">Aktif mi?</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary me-2">Güncelle</button>
+                                        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Fotoğraf önizleme ve sıfırlama scriptleri
+        const uploadInput = document.getElementById('upload');
+        const previewImage = document.getElementById('uploadedPhotoPreview');
+
+        // Başlangıç fotoğraf kaynağını tutacak değişken
+        let initialPhotoSrc = '';
+
+        uploadInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                previewImage.src = URL.createObjectURL(file);
+            }
+        });
+
+        // Sıfırlama fonksiyonu artık parametre almayacak, yakalanan değişkeni kullanacak
+        function resetPreview() {
+            // Sayfa yüklendiğinde yakalanan başlangıç kaynağını kullan
+            previewImage.src = initialPhotoSrc;
+            uploadInput.value = ''; // File inputunu temizle
+        }
+
+        // Ruhsat Sınıfı divini Ruhsat Türü seçimine göre göster/gizle
+        function toggleRuhsatSinifiDiv(selectedRuhsatTuruId) {
+            const ruhsatSinifiDiv = document.getElementById('ruhsatSinifiDiv');
+
+            // Veritabanınızdaki "Gayrisihhi Müessese" Ruhsat Türü'nün gerçek ID'si
+            const gayrisihhiMueseseId = 6; // Gayrisihhi Müessese ID'si
+
+            // selectedRuhsatTuruId değeri string olarak gelir. ID'yi stringe çevirerek karşılaştırma yapıyoruz.
+            if (selectedRuhsatTuruId == gayrisihhiMueseseId.toString()) {
+                ruhsatSinifiDiv.style.display = 'block';
+            } else {
+                ruhsatSinifiDiv.style.display = 'none';
+                // Gizlendiğinde Ruhsat Sınıfı seçimini temizle
+                const ruhsatSinifiSelect = ruhsatSinifiDiv.querySelector('select');
+                if (ruhsatSinifiSelect) {
+                    ruhsatSinifiSelect.value = "";
+                }
+            }
+        }
+
+        // Sayfa yüklendiğinde başlangıç durumunu ayarla, fotoğraf kaynağını yakala ve sıfırlama butonuna olay dinleyicisi ekle
+        $(document).ready(function () {
+            const ruhsatTuruSelect = document.querySelector('select[asp-for="RuhsatTuruId"]');
+            if (ruhsatTuruSelect) {
+                // Mevcut değeri kullanarak divi ayarla (Edit sayfası için önemli)
+                toggleRuhsatSinifiDiv(ruhsatTuruSelect.value);
+            }
+
+            // Sayfa tamamen yüklendikten sonra fotoğrafın başlangıç kaynağını yakala
+            initialPhotoSrc = previewImage.src;
+
+            // Sıfırlama butonunu bul ve tıklama olayı dinleyicisi ekle
+            const resetButton = document.querySelector('.account-image-reset');
+            if (resetButton) {
+                resetButton.addEventListener('click', resetPreview);
+            }
+        });
+
+    </script>
+}

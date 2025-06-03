@@ -1,0 +1,48 @@
+﻿@model RuhsatProject.DTOs.Ruhsat.RuhsatDto
+
+@{
+    ViewData["Title"] = "Ruhsat Sil";
+}
+
+<div class="container py-4">
+    <div class="card shadow border border-danger">
+        <div class="card-body">
+            <h4 class="mb-4 text-danger"><i class="ti ti-alert-triangle"></i> Bu ruhsatı silmek istediğinize emin misiniz?</h4>
+
+            <dl class="row">
+                <dt class="col-sm-3">Ruhsat No</dt>
+                <dd class="col-sm-9">@Model.RuhsatNo</dd>
+
+                <dt class="col-sm-3">Ad Soyad</dt>
+                <dd class="col-sm-9">@Model.Adi @Model.Soyadi</dd>
+
+                <dt class="col-sm-3">İşyeri Ünvanı</dt>
+                <dd class="col-sm-9">@Model.IsyeriUnvani</dd>
+
+                <dt class="col-sm-3">Faaliyet Konusu</dt>
+                <dd class="col-sm-9">@Model.FaaliyetKonusu</dd>
+
+                <dt class="col-sm-3">Veriliş Tarihi</dt>
+                <dd class="col-sm-9">@Model.VerilisTarihi.ToString("dd.MM.yyyy")</dd>
+
+                @if (!string.IsNullOrEmpty(Model.PhotoPath))
+                {
+                    <dt class="col-sm-3">Fotoğraf</dt>
+                    <dd class="col-sm-9">
+                        <img src="@Model.PhotoPath" class="img-thumbnail" style="max-height: 150px;" />
+                    </dd>
+                }
+            </dl>
+
+            <!-- ✅ FORM ASP-ACTION "DELETE" OLACAK -->
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="text-end">
+                    <a asp-action="Index" class="btn btn-secondary me-2">İptal</a>
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

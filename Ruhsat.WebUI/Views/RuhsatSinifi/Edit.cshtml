@@ -1,0 +1,49 @@
+@model RuhsaProject.DTOs.RuhsatSinifiDtos.RuhsatSinifiDto
+
+@{
+    ViewData["Title"] = "Ruhsat Sınıfı Güncelle";
+}
+
+<div class="container py-4">
+    <div class="card mb-4 shadow-lg">
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <form asp-action="Edit" method="post" class="needs-validation" novalidate>
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Form Alanları -->
+                        <div class="row">
+                            <div class="mb-3 col-md-12">
+                                <label asp-for="Name" class="form-label">Ruhsat Sınıfı Adı</label>
+                                <input asp-for="Name" class="form-control" placeholder="Ruhsat sınıfı adını giriniz (örn: 1. Sınıf)" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-12">
+                                <label asp-for="RuhsatTuruId" class="form-label">Ruhsat Türü</label>
+                                <select asp-for="RuhsatTuruId" class="form-select" asp-items="ViewBag.RuhsatTurleri">
+                                    <option value="">Ruhsat türü seçiniz</option>
+                                </select>
+                                <span asp-validation-for="RuhsatTuruId" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-12 text-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="ti ti-check me-1"></i> Güncelle
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="ti ti-arrow-left me-1"></i> İptal
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}

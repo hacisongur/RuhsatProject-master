@@ -1,0 +1,54 @@
+﻿@model RuhsaProject.DTOs.UserDtos.UserLoginDto
+
+@{
+    ViewData["Title"] = "Kullanıcı Girişi";
+    Layout = "_UserLoginLayout";
+}
+<!-- Logo -->
+<div class="text-center mb-2">
+    <img src="~/img/Logo-2.png"
+         alt="Batman Belediyesi Logo"
+         style="width: 100%; max-width: 350px; height: auto; margin-bottom: 0.5rem;" />
+</div>
+
+
+<form asp-action="Login" method="post" class="mb-6 needs-validation" novalidate>
+    <!-- Genel Hata Mesajları -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
+    }
+
+    <!-- E-Posta -->
+    <div class="mb-4">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <!-- Şifre -->
+    <div class="mb-4 form-password-toggle">
+        <label asp-for="Password" class="form-label"></label>
+        <div class="input-group input-group-merge">
+            <input asp-for="Password" class="form-control" type="password" />
+            <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+        </div>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <!-- Beni Hatırla + Şifremi Unuttum -->
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <div class="form-check mb-0">
+            <input asp-for="RememberMe" class="form-check-input" />
+            <label asp-for="RememberMe" class="form-check-label"></label>
+        </div>
+    </div>
+
+    <!-- Giriş Butonu -->
+    <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/localization/messages_tr.js"></script>
+}

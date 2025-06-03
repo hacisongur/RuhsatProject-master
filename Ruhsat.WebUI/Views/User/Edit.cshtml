@@ -1,0 +1,94 @@
+﻿@model RuhsaProject.DTOs.UserDtos.UserUpdateDto
+
+@{
+    ViewData["Title"] = "Kullanıcıyı Güncelle";
+}
+
+<div class="container py-4">
+    <div class="card mb-4 shadow-lg">
+        <div class="card-body">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="ExistingPicturePath" />
+
+                        <!-- Resim -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-start align-items-sm-center gap-4">
+                                <img src="@Model.ExistingPicturePath"
+                                     alt="Mevcut Fotoğraf"
+                                     class="d-block w-px-100 h-px-100 rounded"
+                                     id="uploadedPhotoPreview" />
+                                <div class="button-wrapper">
+                                    <label for="upload" class="btn btn-primary me-3 mb-3" tabindex="0">
+                                        <span class="d-none d-sm-block">Yeni Fotoğraf Seç</span>
+                                        <i class="ti ti-upload d-block d-sm-none"></i>
+                                        <input asp-for="Picture"
+                                               type="file"
+                                               id="upload"
+                                               class="account-file-input"
+                                               hidden
+                                               accept="image/png, image/jpeg" />
+                                    </label>
+                                    <button type="button" class="btn btn-label-secondary mb-3" onclick="resetPreview()">
+                                        <i class="ti ti-refresh-dot d-block d-sm-none"></i>
+                                        <span class="d-none d-sm-block">Sıfırla</span>
+                                    </button>
+                                    <div>JPG, JPEG, PNG. Max 800KB.</div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Picture" class="text-danger"></span>
+                        </div>
+
+                        <!-- Form Alanları -->
+                        <div class="row">
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="UserName" class="form-label"></label>
+                                <input asp-for="UserName" class="form-control" />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label"></label>
+                                <input asp-for="PhoneNumber" class="form-control" maxlength="13" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-12 text-end">
+                                <button type="submit" class="btn btn-primary me-2">Güncelle</button>
+                                <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const uploadInput = document.getElementById('upload');
+        const previewImage = document.getElementById('uploadedPhotoPreview');
+
+        uploadInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                previewImage.src = URL.createObjectURL(file);
+            }
+        });
+
+        function resetPreview() {
+            previewImage.src = '@Model.ExistingPicturePath';
+            uploadInput.value = '';
+        }
+    </script>
+}

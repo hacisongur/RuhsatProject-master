@@ -1,0 +1,270 @@
+﻿@model List<RuhsatProject.DTOs.Ruhsat.RuhsatDto>
+
+@{
+    ViewData["Title"] = "Ruhsat Listesi";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-end mb-3">
+            <a asp-action="Create" class="btn btn-label-primary">
+                <i class="ti ti-plus me-1"></i> Yeni Ruhsat
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm datatables-basic w-100">
+                <thead>
+                    <tr>
+                        <th>Ruhsat No</th>
+                        <th>T.C. / Vergi No</th>
+                        <th>Ad Soyad</th>
+                        <th>İşyeri Ünvanı</th>
+                        <th>Faaliyet Konusu</th>
+                        <th>Ruhsat Türü</th>
+                        <th>Adres</th>
+                        <th>Veriliş Tarihi</th>
+                        <th>Açıklama</th>
+                        <th>Aktiflik</th>
+                        <th>Görsel</th>
+                        <th>Taranmış Belge</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.RuhsatNo</td>
+                            <td>@item.TcKimlikNo</td>
+                            <td>@item.Adi @item.Soyadi</td>
+                            <td>@item.IsyeriUnvani</td>
+                            <td>@item.FaaliyetKonusu?.Name</td>
+                            <td>@item.RuhsatTuru?.Name</td>
+                            <td>@item.Adres</td>
+                            <td>@item.VerilisTarihi.ToString("dd.MM.yyyy")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Not))
+                                {
+                                    <span title="@item.Not">
+                                        @item.Not.Substring(0, Math.Min(30, item.Not.Length))@(item.Not.Length > 30 ? "..." : "")
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge rounded-pill bg-label-success">
+                                        <i class="ti ti-check me-1"></i> Aktif
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge rounded-pill bg-label-danger">
+                                        <i class="ti ti-x me-1"></i> Pasif
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.PhotoPath))
+                                {
+                                    <button type="button"
+                                            class="btn btn-sm btn-icon btn-info"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#photoModal"
+                                            data-photo="@item.PhotoPath">
+                                        <i class="ti ti-eye"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Yok</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ScannedFilePath))
+                                {
+                                    <button type="button"
+                                            class="btn btn-sm btn-icon btn-success"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#scanPreviewModal"
+                                            data-scan="@item.ScannedFilePath">
+                                        <i class="ti ti-eye"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="btn btn-sm btn-icon btn-secondary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#uploadScanModal"
+                                            data-id="@item.Id">
+                                        <i class="ti ti-upload"></i>
+                                    </button>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-primary me-1">
+                                    <i class="ti ti-edit"></i>
+                                </a>
+                                    <a asp-action="GenerateReport" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-info me-1">
+                                    <i class="ti ti-printer"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-danger">
+                                    <i class="ti ti-trash-filled"></i>
+                                </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Fotoğraf Önizleme Modal -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Fotoğraf Önizleme</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" id="previewImage" class="img-fluid rounded shadow" style="max-height: 500px;" alt="Fotoğraf" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Taranmış Belge Önizleme Modal -->
+<div class="modal fade" id="scanPreviewModal" tabindex="-1" aria-labelledby="scanPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Taranmış Belge</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="scanContent"></div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="downloadScanBtn" class="btn btn-success" download>
+                    <i class="ti ti-download"></i> İndir
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Taranmış Belge Yükleme Modal -->
+<div class="modal fade" id="uploadScanModal" tabindex="-1" aria-labelledby="uploadScanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-action="UploadScannedFile" method="post" enctype="multipart/form-data" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Taranmış Belge Yükle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="id" id="scanRuhsatId" />
+                <input type="file" name="scannedFile" accept=".pdf,.jpg,.jpeg,.png" class="form-control" required />
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Yükle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons/js/buttons.bootstrap5.min.js"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/jszip/jszip.min.js"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/pdfmake/pdfmake.min.js"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/pdfmake/vfs_fonts.js"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons/js/buttons.print.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.datatables-basic').DataTable({
+                scrollX: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json'
+                },
+                dom: 't<"row mx-2 mt-2"<"col-md-6"l><"col-md-6 d-flex justify-content-end"p>>'
+            });
+        });
+
+        const photoModal = document.getElementById('photoModal');
+        if (photoModal) {
+            photoModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const photoPath = button.getAttribute('data-photo');
+                const previewImage = document.getElementById('previewImage');
+                if (previewImage && photoPath) {
+                    previewImage.src = photoPath;
+                }
+            });
+        }
+
+        const uploadScanModal = document.getElementById('uploadScanModal');
+        if (uploadScanModal) {
+            uploadScanModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const ruhsatId = button.getAttribute('data-id');
+                document.getElementById('scanRuhsatId').value = ruhsatId;
+            });
+        }
+
+        const scanPreviewModal = document.getElementById('scanPreviewModal');
+        if (scanPreviewModal) {
+            scanPreviewModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const scanPath = button.getAttribute('data-scan');
+                const scanContent = document.getElementById('scanContent');
+                const downloadBtn = document.getElementById('downloadScanBtn');
+
+                if (scanPath) {
+                    const extension = scanPath.split('.').pop().toLowerCase();
+
+                    if (['jpg', 'jpeg', 'png'].includes(extension)) {
+                        scanContent.innerHTML = `<img src="${scanPath}" class="img-fluid rounded shadow" style="max-height: 600px;" alt="Taranmış Belge" />`;
+                    } else if (extension === 'pdf') {
+                        scanContent.innerHTML = `<embed src="${scanPath}" type="application/pdf" width="100%" height="600px" />`;
+                    } else {
+                        scanContent.innerHTML = `<p class="text-muted">Bu dosya önizlenemiyor.</p>`;
+                    }
+
+                    downloadBtn.href = scanPath;
+                }
+            });
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        table.datatables-basic td,
+        table.datatables-basic th {
+            font-size: 12px !important;
+            padding: 0.3rem 0.5rem !important;
+        }
+
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            font-size: 12px !important;
+        }
+
+        .btn-sm {
+            font-size: 12px !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+    </style>
+}

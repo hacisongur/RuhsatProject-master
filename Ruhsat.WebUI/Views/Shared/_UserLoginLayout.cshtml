@@ -1,0 +1,79 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr"
+      class="light-style layout-wide customizer-hide"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="/vuexy-bootstrap-html-admin-template/assets/"
+      data-template="vertical-menu-template"
+      data-style="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>@ViewData["Title"] | Ruhsat Paneli</title>
+
+    <link rel="icon" type="image/x-icon" href="~/vuexy-bootstrap-html-admin-template/assets/img/favicon/favicon.ico" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/fonts/fontawesome.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/fonts/tabler-icons.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/fonts/flag-icons.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/css/rtl/core.css" class="template-customizer-core-css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/css/rtl/theme-default.css" class="template-customizer-theme-css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/css/demo.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/node-waves/node-waves.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/typeahead-js/typeahead.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/vuexy-bootstrap-html-admin-template/assets/vendor/css/pages/page-auth.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/js/helpers.js" asp-append-version="true"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/js/template-customizer.js" asp-append-version="true"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/js/config.js" asp-append-version="true"></script>
+</head>
+
+<body>
+    <div class="authentication-wrapper authentication-cover">
+        <a href="/" class="app-brand d-flex align-items-center justify-content-center mb-3">
+            <img src="~/img/Logo-2.png" alt="Batman Belediyesi Logo" style="height: 150px;" />
+        </a>
+
+
+        <div class="authentication-inner row m-0">
+            <div class="d-none d-lg-flex col-lg-8 p-0">
+                <div class="auth-cover-bg d-flex justify-content-center align-items-center">
+                    <img src="~/vuexy-bootstrap-html-admin-template/assets/img/illustrations/auth-login-illustration-light.png"
+                         class="my-5 auth-illustration"
+                         alt="Login Image"
+                         data-app-light-img="illustrations/auth-login-illustration-light.png"
+                         data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
+                </div>
+            </div>
+
+            <!-- Rendered Page Content -->
+            <div class="d-flex col-12 col-lg-4 align-items-center authentication-bg p-sm-12 p-6">
+                <div class="w-px-400 mx-auto mt-12 pt-5">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/jquery/jquery.js" asp-append-version="true"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/popper/popper.js" asp-append-version="true"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/js/bootstrap.js" asp-append-version="true"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js" asp-append-version="true"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/js/menu.js" asp-append-version="true"></script>
+    <script src="~/vuexy-bootstrap-html-admin-template/assets/js/main.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

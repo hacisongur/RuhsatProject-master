@@ -1,0 +1,16 @@
+﻿@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            toastr.success('@Html.Raw(TempData["SuccessMessage"])');
+        });
+    </script>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            toastr.error('@Html.Raw(TempData["ErrorMessage"])');
+        });
+    </script>
+}
