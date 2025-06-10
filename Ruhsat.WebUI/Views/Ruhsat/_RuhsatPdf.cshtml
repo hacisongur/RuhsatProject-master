@@ -4,11 +4,13 @@
 }
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <title>Ruhsat Belgesi</title>
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -66,7 +68,7 @@
 
         .main-title {
             text-align: center;
-            font-size: 20pt;
+            font-size: 18pt;
             font-weight: 680;
             margin-bottom: 40px;
         }
@@ -77,23 +79,24 @@
             margin-bottom: 20px;
         }
 
-            .content-table td {
-                padding: 2px 3px;
-                vertical-align: top;
-                line-height: 1.6;
-                font-size: 18px;
-            }
-
-            .content-table tr {
-                padding-bottom: 4px;
-            }
-
-        .label {
-            font-weight: bold;
-            width: 20%;
-            white-space: nowrap;
-            font-size: 20px;
+        .content-table td {
+            padding: 2px 3px;
+            vertical-align: top;
+            line-height: 1.6;
+            font-size: 16px;
         }
+
+        .content-table tr {
+            padding-bottom: 4px;
+        }
+
+            .content-table .label {
+                font-weight: bold;
+                width: 20%;
+                white-space: nowrap;
+                font-size: 16px; /* Burayı istediğin boyutta ayarla */
+            }
+
 
         .photo {
             position: absolute;
@@ -125,21 +128,23 @@
             table-layout: fixed;
         }
 
-            .row-three-cols td {
-                padding: 1px 2px;
-                font-size: 16px;
-                white-space: nowrap;
-                vertical-align: top;
-            }
+        .row-three-cols td {
+            padding: 1px 2px;
+            font-size: 16px;
+            white-space: nowrap;
+            vertical-align: top;
+        }
 
 
 
 
-        @@media print {
+        @@media print
+        {
             /* PDF kenar boşlukları yazıcıdan ayarlanmalı */
         }
     </style>
 </head>
+
 <body>
     <div class="wrapper">
         <div class="header">
@@ -157,21 +162,44 @@
         </div>
 
         @if (!string.IsNullOrEmpty(Model.PhotoPath))
-        {
-            <img class="photo" src="@Model.PhotoPath" alt="Fotoğraf" />
-        }
+                {
+                <img class="photo" src="@Model.PhotoPath" alt="Fotoğraf" />
+            }
 
         <!-- Ana bilgiler -->
         <table class="content-table">
-            <tr><td class="label">T.C. Kimlik No</td><td>: @Model.TcKimlikNo</td></tr>
-            <tr><td colspan="2" style="height:6px;"></td></tr>
-            <tr><td class="label">Adı Soyadı</td><td>: @Model.Adi @Model.Soyadi</td></tr>
-            <tr><td colspan="2" style="height:6px;"></td></tr>
-            <tr><td class="label">İşyeri Ünvanı</td><td>: @Model.IsyeriUnvani</td></tr>
-            <tr><td colspan="2" style="height:6px;"></td></tr>
-            <tr><td class="label">Faaliyet Konusu</td><td>: @Model.FaaliyetKonusu?.Name</td></tr>
-            <tr><td colspan="2" style="height:6px;"></td></tr>
-            <tr><td class="label">İşyerinin Adresi</td><td>: @Model.Adres</td></tr>
+            <tr>
+                <td class="label">T.C. Kimlik No</td>
+                <td>: @Model.TcKimlikNo</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="height:6px;"></td>
+            </tr>
+            <tr>
+                <td class="label">Adı Soyadı</td>
+                <td>: @Model.Adi @Model.Soyadi</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="height:6px;"></td>
+            </tr>
+            <tr>
+                <td class="label">İşyeri Ünvanı</td>
+                <td>: @Model.IsyeriUnvani</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="height:6px;"></td>
+            </tr>
+            <tr>
+                <td class="label">Faaliyet Konusu</td>
+                <td>: @Model.FaaliyetKonusu?.Name</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="height:6px;"></td>
+            </tr>
+            <tr>
+                <td class="label">İşyerinin Adresi</td>
+                <td>: @Model.Adres</td>
+            </tr>
         </table>
 
         <!-- Ada / Pafta / Parsel -->
@@ -191,21 +219,36 @@
         </table>
 
         <table class="content-table">
-            <tr><td class="label">İşyeri Sınıfı </td><td>: @Model.RuhsatTuru?.Name</td></tr>   
+            <tr>
+                <td class="label">İşyeri Sınıfı </td>
+                <td>: @Model.RuhsatTuru?.Name</td>
+            </tr>
         </table>
         <table style="width: 100%; table-layout: fixed; margin-top: 4px;">
             <tr>
                 <td style="white-space: nowrap; text-align: left; font-size: 17px; padding: 0;">
-                    <span style="font-weight: bold;">Ruhsat Tarihi :</span>  @Model.VerilisTarihi.ToString("dd.MM.yyyy")
+                    <span style="font-weight: bold;">Ruhsat Tarihi :</span> @Model.VerilisTarihi.ToString("dd.MM.yyyy")
                     &nbsp;&nbsp;-&nbsp;&nbsp;
-                    <span style="font-weight: bold;">Ruhsat No :</span>  @Model.RuhsatNo
+                    <span style="font-weight: bold;">Ruhsat No :</span> @Model.RuhsatNo
                 </td>
             </tr>
         </table>
+        <div style="position: relative; width: 100%; height: 90px; margin-top: 120px;">
+            <!-- Üst satır sağda -->
+            <div style="position: absolute; top: 0; right: 40px; font-size: 16pt; font-weight: bold; text-align: right;">
+                Mustafa Caner CULUKAR
+            </div>
 
+            <!-- Ortadaki satır tam sayfa ortasında -->
+            <div style="position: absolute; top: 32px; right: 70px; font-size: 14pt; text-align: center; width: 150px;">
+                Başkan a.
+            </div>
 
-
-
+            <!-- Alt satır sağda -->
+            <div style="position: absolute; bottom: 0; right: 40px; font-size: 14pt; text-align: right;">
+                Belediye Başkan Yardımcısı
+            </div>
+        </div>
 
         <div class="footer">
             14/07/2005 Tarihli ve 2005/9207 Sayılı Bakanlar Kurulu Kararı ile yürürlüğe konulan
@@ -213,4 +256,5 @@
         </div>
     </div>
 </body>
+
 </html>

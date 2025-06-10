@@ -1,19 +1,26 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using RuhsaProject.Core.Interfaces;
+using RuhsaProject.Entities.Concrete;
 using RuhsatProject.Business.IServices;
 using RuhsatProject.Core.Interfaces;
+using RuhsatProject.DataAccess.Contexts;  // Add this namespace
 using RuhsatProject.DTOs.Ruhsat;
 using RuhsatProject.Entities.Concrete;
+using System.Linq.Expressions;
+
 namespace RuhsatProject.Business.Services
 {
     public class RuhsatManager : IRuhsatService
     {
         private readonly IRuhsatRepository _ruhsatRepository;
         private readonly IMapper _mapper;
-
-        public RuhsatManager(IRuhsatRepository ruhsatRepository, IMapper mapper)
+        private readonly RuhsatDbContext _dbContext;  
+        public RuhsatManager(IRuhsatRepository ruhsatRepository, IMapper mapper, RuhsatDbContext dbContext)
         {
             _ruhsatRepository = ruhsatRepository;
             _mapper = mapper;
+            _dbContext = dbContext;  
         }
 
         public async Task<List<RuhsatDto>> GetAllAsync()
@@ -44,5 +51,7 @@ namespace RuhsatProject.Business.Services
         {
             await _ruhsatRepository.DeleteAsync(id);
         }
+
+        
     }
 }

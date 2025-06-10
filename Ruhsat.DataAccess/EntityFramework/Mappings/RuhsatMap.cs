@@ -32,11 +32,6 @@ namespace RuhsatProject.DataAccess.EntityFramework.Mappings
                 .WithMany()
                 .HasForeignKey(r => r.RuhsatSinifiId); // RuhsatSinifiId foreign key'i
 
-            builder.HasOne(r => r.RuhsatImza)  // Ruhsat ile RuhsatImza ilişkisi
-           .WithOne()   // One-to-one ilişki
-           .HasForeignKey<Ruhsat>(r => r.RuhsatImzaId) // RuhsatImzaId foreign key
-           .OnDelete(DeleteBehavior.SetNull);  // İlgili RuhsatImza silindiğinde, RuhsatImzaId null yapılır
-
             builder.Property(r => r.Adres).HasMaxLength(300);
             builder.Property(r => r.Not).HasMaxLength(500);
             builder.Property(r => r.PhotoPath).HasMaxLength(250);

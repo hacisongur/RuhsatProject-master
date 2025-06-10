@@ -104,15 +104,15 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-primary me-1">
-                                    <i class="ti ti-edit"></i>
-                                </a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-primary me-1">
+                                        <i class="ti ti-edit"></i>
+                                    </a>
                                     <a asp-action="GenerateReport" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-info me-1">
-                                    <i class="ti ti-printer"></i>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-danger">
-                                    <i class="ti ti-trash-filled"></i>
-                                </a>
+                                        <i class="ti ti-printer"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-danger">
+                                        <i class="ti ti-trash-filled"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -221,7 +221,7 @@
             });
         }
 
-        const scanPreviewModal = document.getElementById('scanPreviewModal');
+                const scanPreviewModal = document.getElementById('scanPreviewModal');
         if (scanPreviewModal) {
             scanPreviewModal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
@@ -233,17 +233,22 @@
                     const extension = scanPath.split('.').pop().toLowerCase();
 
                     if (['jpg', 'jpeg', 'png'].includes(extension)) {
+                        // Görselin doğru formatta olduğunu kontrol ettikten sonra ekleyin
                         scanContent.innerHTML = `<img src="${scanPath}" class="img-fluid rounded shadow" style="max-height: 600px;" alt="Taranmış Belge" />`;
                     } else if (extension === 'pdf') {
+                        // PDF dosyalarını embed et
                         scanContent.innerHTML = `<embed src="${scanPath}" type="application/pdf" width="100%" height="600px" />`;
                     } else {
+                        // Desteklenmeyen formatları belirtin
                         scanContent.innerHTML = `<p class="text-muted">Bu dosya önizlenemiyor.</p>`;
                     }
 
+                    // İndirme butonunu da ekleyin
                     downloadBtn.href = scanPath;
                 }
             });
         }
+
     </script>
 }
 

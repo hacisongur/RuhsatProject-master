@@ -298,7 +298,6 @@ namespace RuhsatProject.WebUI.Controllers
                 CustomSwitches = "--disable-smart-shrinking" // ✅ Eklenmesi önerilir
             };
         }
-
-
+     
     }
 }

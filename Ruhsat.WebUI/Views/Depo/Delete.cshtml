@@ -1,27 +1,24 @@
-﻿@model RuhsaProject.DTOs.RuhsatImzaDtos.RuhsatImzaDto
+﻿@model RuhsaProject.DTOs.DepoDtos.DepoDto
 
 @{
-    ViewData["Title"] = "Ruhsat İmza Sil";
+    ViewData["Title"] = "Depo Sil";
 }
 
-<h4 class="fw-bold py-3 mb-4 text-danger">Ruhsat İmza Kaydını Sil</h4>
+<h4 class="fw-bold py-3 mb-4 text-danger">Depo Sil</h4>
 
 <div class="card border border-danger">
     <div class="card-body">
-        <h5 class="card-title text-danger">Bu imza kaydını silmek istediğinize emin misiniz?</h5>
+        <h5 class="card-title text-danger">Bu depoyu silmek istediğinize emin misiniz?</h5>
 
         <dl class="row mt-3">
             <dt class="col-sm-3">ID</dt>
             <dd class="col-sm-9">@Model.Id</dd>
 
-            <dt class="col-sm-3">Ad Soyad</dt>
-            <dd class="col-sm-9">@Model.AdSoyad</dd>
+            <dt class="col-sm-3">Depo Adı</dt>
+            <dd class="col-sm-9">@Model.Adi</dd>
 
-            <dt class="col-sm-3">Ünvan 1</dt>
-            <dd class="col-sm-9">@Model.Unvan1</dd>
-
-            <dt class="col-sm-3">Ünvan 2</dt>
-            <dd class="col-sm-9">@Model.Unvan2</dd>
+            <dt class="col-sm-3">Ruhsat Sınıfı</dt>
+            <dd class="col-sm-9">@Model.RuhsatSinifi?.Name</dd>
         </dl>
 
         <form asp-action="Delete" asp-route-id="@Model.Id" method="post">

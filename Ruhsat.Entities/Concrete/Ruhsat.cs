@@ -21,8 +21,6 @@ namespace RuhsatProject.Entities.Concrete
         public int RuhsatTuruId { get; set; }
         public RuhsatTuru RuhsatTuru { get; set; } // Ruhsat Türü (Navigation Property)
         // RuhsatImza ile ilişki
-        public int? RuhsatImzaId { get; set; }
-        public RuhsatImza? RuhsatImza { get; set; } // Ruhsat Türü (Navigation Property)
 
         // RuhsatSinifi ile ilişki
         public int? RuhsatSinifiId { get; set; }

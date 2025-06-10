@@ -18,7 +18,8 @@ namespace RuhsatProject.DataAccess.Contexts
         public DbSet<FaaliyetKonusu> FaaliyetKonulari { get; set; }
         public DbSet<RuhsatTuru> RuhsatTurleri { get; set; }
         public DbSet<RuhsatSinifi> RuhsatSiniflari { get; set; }
-        public DbSet<RuhsatImza> RuhsatImzalar { get; set; }
+        public DbSet<Depo> Depolar { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -53,14 +54,12 @@ namespace RuhsatProject.DataAccess.Contexts
                 .HasOne(r => r.RuhsatSinifi)
                 .WithMany()
                 .HasForeignKey(r => r.RuhsatSinifiId);
-            // Ruhsat - RuhsatImza (bire bir ilişki, Ruhsat tablosunda FK var)
-            modelBuilder.Entity<Ruhsat>()
-        .HasOne(r => r.RuhsatImza)
-        .WithOne()
-        .HasForeignKey<Ruhsat>(r => r.RuhsatImzaId)
-        .OnDelete(DeleteBehavior.SetNull); // Silinince ilişkili RuhsatImzaId null yapılacak
 
-
+            // RuhsatSinifi - Depo
+            modelBuilder.Entity<Depo>()
+                .HasOne(d => d.RuhsatSinifi)
+                .WithMany()
+                .HasForeignKey(d => d.RuhsatSinifiId);
 
 
             // Mapping sınıfları
@@ -75,7 +74,8 @@ namespace RuhsatProject.DataAccess.Contexts
             modelBuilder.ApplyConfiguration(new PermissionMap());
             modelBuilder.ApplyConfiguration(new RolePermissionMap());
             modelBuilder.ApplyConfiguration(new LogEntryMap());
-            modelBuilder.ApplyConfiguration(new RuhsatImzaMap());
+            modelBuilder.ApplyConfiguration(new DepoMap());
+
         }
     }
 }

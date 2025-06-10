@@ -1,4 +1,6 @@
-﻿using RuhsatProject.Entities.Concrete;
+﻿using RuhsaProject.Entities.Concrete;
+using RuhsatProject.Entities.Concrete;
+using System.Linq.Expressions;
 
 namespace RuhsatProject.Core.Interfaces
 {

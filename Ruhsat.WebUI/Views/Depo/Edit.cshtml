@@ -1,7 +1,7 @@
-﻿@model RuhsaProject.DTOs.RuhsatImzaDtos.RuhsatImzaDto
+﻿@model RuhsaProject.DTOs.DepoDtos.DepoDto
 
 @{
-    ViewData["Title"] = "Ruhsat İmza Güncelle";
+    ViewData["Title"] = "Depo Güncelle";
 }
 
 <div class="container py-4">
@@ -15,21 +15,17 @@
                         <!-- Form Alanları -->
                         <div class="row">
                             <div class="mb-3 col-md-12">
-                                <label asp-for="AdSoyad" class="form-label">Ad Soyad</label>
-                                <input asp-for="AdSoyad" class="form-control" placeholder="Adı Soyadı giriniz" />
-                                <span asp-validation-for="AdSoyad" class="text-danger"></span>
+                                <label asp-for="Adi" class="form-label">Depo Adı</label>
+                                <input asp-for="Adi" class="form-control" placeholder="Depo adını giriniz (örn: Gıda Deposu)" />
+                                <span asp-validation-for="Adi" class="text-danger"></span>
                             </div>
 
                             <div class="mb-3 col-md-12">
-                                <label asp-for="Unvan1" class="form-label">Ünvan 1</label>
-                                <input asp-for="Unvan1" class="form-control" placeholder="Ünvanı giriniz" />
-                                <span asp-validation-for="Unvan1" class="text-danger"></span>
-                            </div>
-
-                            <div class="mb-3 col-md-12">
-                                <label asp-for="Unvan2" class="form-label">Ünvan 2</label>
-                                <input asp-for="Unvan2" class="form-control" placeholder="Alt unvanı giriniz" />
-                                <span asp-validation-for="Unvan2" class="text-danger"></span>
+                                <label asp-for="RuhsatSinifiId" class="form-label">Ruhsat Sınıfı</label>
+                                <select asp-for="RuhsatSinifiId" class="form-select" asp-items="ViewBag.RuhsatSiniflari">
+                                    <option value="">Ruhsat sınıfı seçiniz</option>
+                                </select>
+                                <span asp-validation-for="RuhsatSinifiId" class="text-danger"></span>
                             </div>
 
                             <div class="mb-3 col-md-12 text-end">

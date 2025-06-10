@@ -35,11 +35,10 @@ builder.Services.AddScoped<IFaaliyetKonusuService, FaaliyetKonusuManager>();
 
 builder.Services.AddScoped<IRuhsatSinifiRepository, RuhsatSinifiRepository>();
 builder.Services.AddScoped<IRuhsatSinifiService, RuhsatSinifiManager>();
-builder.Services.AddScoped<IRuhsatImzaRepository, RuhsatImzaRepository>();
-builder.Services.AddScoped<IRuhsatImzaService, RuhsatImzaManager>();
 
 
-
+builder.Services.AddScoped<IDepoRepository, DepoRepository>();
+builder.Services.AddScoped<IDepoService, DepoManager>();
 // ? Service + Identity + DbContext (SQL Server baðlantýsýyla)
 builder.Services.LoadMyServices(builder.Configuration);
 

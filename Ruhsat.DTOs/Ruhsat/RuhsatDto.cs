@@ -1,6 +1,5 @@
 ﻿
 using RuhsaProject.DTOs.FaaliyetKonusuDtos;
-using RuhsaProject.DTOs.RuhsatImzaDtos;
 using RuhsaProject.DTOs.RuhsatSinifiDtos;
 using RuhsaProject.DTOs.RuhsatTuruDtos;
 using System.ComponentModel;
@@ -40,9 +39,6 @@ namespace RuhsatProject.DTOs.Ruhsat
         [DisplayName("Ruhsat Sınıfı")]
         public int? RuhsatSinifiId { get; set; }
         public RuhsatSinifiDto? RuhsatSinifi { get; set; } // Ruhsat Sinifi DTO
-        [DisplayName("Ruhsat İmza")]
-        public int? RuhsatImzaId { get; set; }  // Ruhsat İmza Id
-        public RuhsatImzaDto? RuhsatImza { get; set; } // Ruhsat İmza DTO
 
         [DisplayName("Adres")]
         public string? Adres { get; set; }
@@ -66,6 +62,7 @@ namespace RuhsatProject.DTOs.Ruhsat
 
         [DisplayName("Aktif Mi?")]
         public bool IsActive { get; set; }
+
 
     }
 }

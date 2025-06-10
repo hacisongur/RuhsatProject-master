@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RuhsaProject.Entities.Concrete;
 using RuhsatProject.Core.Interfaces;
 using RuhsatProject.DataAccess.Contexts;
 using RuhsatProject.Entities.Concrete;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace RuhsatProject.DataAccess.EntityFramework.Repositories
 {

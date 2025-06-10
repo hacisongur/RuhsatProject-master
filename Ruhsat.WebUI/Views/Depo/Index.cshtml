@@ -1,7 +1,7 @@
-﻿@model List<RuhsaProject.DTOs.RuhsatImzaDtos.RuhsatImzaDto>
+﻿@model List<RuhsaProject.DTOs.DepoDtos.DepoDto>
 
 @{
-    ViewData["Title"] = "Ruhsat İmza Listesi";
+    ViewData["Title"] = "Depo Listesi";
 }
 
 <!-- DataTable with Buttons -->
@@ -9,7 +9,7 @@
     <div class="card-body">
         <div class="d-flex justify-content-end mb-3">
             <a asp-action="Create" class="btn btn-label-primary">
-                <i class="ti ti-plus me-1"></i> Yeni Ruhsat İmza
+                <i class="ti ti-plus me-1"></i> Yeni Depo
             </a>
         </div>
         <div class="table-responsive">
@@ -17,9 +17,8 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Ad Soyad</th>
-                        <th>Ünvan 1</th>
-                        <th>Ünvan 2</th>
+                        <th>Depo Adı</th>
+                        <th>Ruhsat Sınıfı</th>
                         <th>İşlemler</th>
                     </tr>
                 </thead>
@@ -28,9 +27,8 @@
                     {
                         <tr>
                             <td>@item.Id</td>
-                            <td>@item.AdSoyad</td>
-                            <td>@item.Unvan1</td>
-                            <td>@item.Unvan2</td>
+                            <td>@item.Adi</td>
+                            <td>@item.RuhsatSinifi?.Name</td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-icon btn-label-primary">
                                     <i class="ti ti-edit"></i>
@@ -55,7 +53,8 @@
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json'
                 },
-                dom: 't<"row mx-2 mt-2"<"col-md-6"l><"col-md-6 d-flex justify-content-end"p>>'
+                dom: 't<"row mx-2 mt-2"<"col-md-6"l><"col-md-6 d-flex justify-content-end"p>>',
+                 order: [[0, 'desc']] // En son eklenen en üstte
             });
         });
     </script>

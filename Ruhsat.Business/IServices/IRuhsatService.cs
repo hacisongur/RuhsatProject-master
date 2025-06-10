@@ -1,6 +1,6 @@
-﻿
-
+﻿using RuhsaProject.Entities.Concrete;
 using RuhsatProject.DTOs.Ruhsat;
+using System.Linq.Expressions;
 
 namespace RuhsatProject.Business.IServices
 {
@@ -11,5 +11,6 @@ namespace RuhsatProject.Business.IServices
         Task AddAsync(RuhsatDto dto);
         Task UpdateAsync(RuhsatDto dto);
         Task DeleteAsync(int id);
+
     }
 }
