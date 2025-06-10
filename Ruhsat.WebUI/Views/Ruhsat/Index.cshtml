@@ -6,11 +6,14 @@
 
 <div class="card">
     <div class="card-body">
-        <div class="d-flex justify-content-end mb-3">
-            <a asp-action="Create" class="btn btn-label-primary">
-                <i class="ti ti-plus me-1"></i> Yeni Ruhsat
-            </a>
+        <div class="d-flex justify-content-between mb-3">
+            <div class="input-group" style="width: 300px;">
+                <input type="text" id="tableSearchInput" class="form-control form-control-sm" placeholder="Ruhsat arama..." />
+                <span class="input-group-text"><i class="ti ti-search"></i></span>
+            </div>
+
         </div>
+
         <div class="table-responsive">
             <table class="table table-sm datatables-basic w-100">
                 <thead>
@@ -176,8 +179,6 @@
         </form>
     </div>
 </div>
-
-
 @section Scripts {
     <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js"></script>
     <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons/js/dataTables.buttons.min.js"></script>
@@ -188,18 +189,77 @@
     <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/pdfmake/vfs_fonts.js"></script>
     <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons/js/buttons.print.min.js"></script>
-
     <script>
         $(document).ready(function () {
-            $('.datatables-basic').DataTable({
+            var table = $('.datatables-basic').DataTable({
                 scrollX: true,
+                order: [[0, 'desc']], // Ruhsat No'ya göre azalan sıralama
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json'
                 },
-                dom: 't<"row mx-2 mt-2"<"col-md-6"l><"col-md-6 d-flex justify-content-end"p>>'
+                dom:
+                    "<'row mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 text-end'B>>" +
+                    "<'table-responsive'tr>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                buttons: [
+                    {
+                        text: '<i class="ti ti-file-check me-1"></i> Ekle',
+                        className: 'btn btn-sm btn-outline-primary me-1',
+                        action: function () {
+                            window.location.href = '/Ruhsat/Create';
+                        }
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        title: 'Ruhsat Listesi',
+                        text: '<i class="ti ti-file-spreadsheet me-1"></i> Excel',
+                        className: 'btn btn-sm btn-outline-success me-1',
+                        exportOptions: { columns: [0,1,2,3,4,5,6,7,8,9] }
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'Ruhsat Listesi',
+                        text: '<i class="ti ti-file-text me-1"></i> PDF',
+                        className: 'btn btn-sm btn-outline-danger me-1',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        exportOptions: { columns: [0,1,2,3,4,5,6,7,8,9] }
+                    },
+                    {
+                        extend: 'print',
+                        title: 'Ruhsat Listesi',
+                        text: '<i class="ti ti-printer me-1"></i> Yazdır',
+                        className: 'btn btn-sm btn-outline-primary',
+                        exportOptions: { columns: [0,1,2,3,4,5,6,7,8,9] }
+                    }
+                ],
+                lengthMenu: [10, 25, 50, 100],
+                pageLength: 10
+            });
+
+            // Özel arama: İlk 7 kolonda büyük-küçük harf duyarsız arama
+            $('#tableSearchInput').on('keyup', function () {
+                var searchTerm = this.value.toLowerCase();
+
+                // Önce varsa eklenmiş filtreleri temizle
+                $.fn.dataTable.ext.search = [];
+
+                if (searchTerm) {
+                    $.fn.dataTable.ext.search.push(function (settings, data) {
+                        var combinedData = '';
+                        for (var i = 0; i < 7; i++) {  
+                            combinedData += data[i].toLowerCase() + ' ';
+                        }
+                        combinedData = combinedData.trim();
+                        return combinedData.indexOf(searchTerm) !== -1;
+                    });
+                }
+
+                table.draw();
             });
         });
 
+        // Fotoğraf Modal
         const photoModal = document.getElementById('photoModal');
         if (photoModal) {
             photoModal.addEventListener('show.bs.modal', function (event) {
@@ -212,6 +272,7 @@
             });
         }
 
+        // Taranmış Belge Yükleme Modal
         const uploadScanModal = document.getElementById('uploadScanModal');
         if (uploadScanModal) {
             uploadScanModal.addEventListener('show.bs.modal', function (event) {
@@ -221,7 +282,8 @@
             });
         }
 
-                const scanPreviewModal = document.getElementById('scanPreviewModal');
+        // Taranmış Belge Önizleme Modal
+        const scanPreviewModal = document.getElementById('scanPreviewModal');
         if (scanPreviewModal) {
             scanPreviewModal.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget;
@@ -233,24 +295,21 @@
                     const extension = scanPath.split('.').pop().toLowerCase();
 
                     if (['jpg', 'jpeg', 'png'].includes(extension)) {
-                        // Görselin doğru formatta olduğunu kontrol ettikten sonra ekleyin
                         scanContent.innerHTML = `<img src="${scanPath}" class="img-fluid rounded shadow" style="max-height: 600px;" alt="Taranmış Belge" />`;
                     } else if (extension === 'pdf') {
-                        // PDF dosyalarını embed et
                         scanContent.innerHTML = `<embed src="${scanPath}" type="application/pdf" width="100%" height="600px" />`;
                     } else {
-                        // Desteklenmeyen formatları belirtin
                         scanContent.innerHTML = `<p class="text-muted">Bu dosya önizlenemiyor.</p>`;
                     }
 
-                    // İndirme butonunu da ekleyin
                     downloadBtn.href = scanPath;
                 }
             });
         }
-
     </script>
 }
+
+
 
 @section Styles {
     <style>
@@ -267,9 +326,23 @@
             font-size: 12px !important;
         }
 
-        .btn-sm {
-            font-size: 12px !important;
-            padding: 0.25rem 0.5rem !important;
+        /* ✅ Hover efekti: Açık Mor */
+        table.datatables-basic tbody tr:hover {
+            background-color: #E0E4F5 !important;
+            cursor: pointer;
         }
+
+        /* ✅ Export butonları + Yeni Ruhsat hizalama %100 çözüm */
+        .dataTables_wrapper .dt-buttons {
+            display: flex !important;
+            align-items: center !important; /* YATAYDA ORTALAR */  
+            justify-content: flex-end;
+            gap: 0.4rem;
+            height: 100%; /* BURASI KRİTİK → aynı yüksekliğe zorlar */
+            margin-bottom: 0.3rem !important; /* biraz boşluk bırak */
+            margin-top: 0 !important;
+        }
+
+        /* ✅ DataTable butonlarının padding ve font ayarını karışık yapma → default bırakıyoruz */
     </style>
 }

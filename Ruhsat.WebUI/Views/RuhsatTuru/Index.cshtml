@@ -48,6 +48,7 @@
         $(document).ready(function () {
             $('.datatables-basic').DataTable({
                 scrollX: true,
+                  order: [[0, 'desc']], // ID sütununa göre azalan sıralama
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json'
                 },
@@ -63,6 +64,12 @@
         table.datatables-basic th {
             font-size: 12px !important;
             padding: 0.3rem 0.5rem !important;
+        }
+
+        /* Hover efekti — açık turkuaz */
+        table.datatables-basic tbody tr:hover {
+            background-color: #E0E4F5 !important; /* açık turkuaz */
+            cursor: pointer; /* opsiyonel: el işareti çıkması için */
         }
     </style>
 }
