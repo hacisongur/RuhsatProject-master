@@ -1,4 +1,5 @@
 ﻿
+using RuhsaProject.DTOs.DepoDtos;
 using RuhsaProject.DTOs.FaaliyetKonusuDtos;
 using RuhsaProject.DTOs.RuhsatSinifiDtos;
 using RuhsaProject.DTOs.RuhsatTuruDtos;
@@ -62,6 +63,7 @@ namespace RuhsatProject.DTOs.Ruhsat
 
         [DisplayName("Aktif Mi?")]
         public bool IsActive { get; set; }
+        public List<DepoBilgiDto> DepoBilgileri { get; set; } = new List<DepoBilgiDto>();
 
 
     }

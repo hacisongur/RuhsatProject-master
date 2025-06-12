@@ -1,9 +1,9 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using RuhsaProject.Business.IServices;
 using RuhsaProject.Core.Interfaces;
 using RuhsaProject.DTOs.DepoDtos;
 using RuhsaProject.Entities.Concrete;
+using System.Linq.Expressions;
 
 namespace RuhsaProject.Business.Services
 {
@@ -18,9 +18,17 @@ namespace RuhsaProject.Business.Services
             _mapper = mapper;
         }
 
+        // 1️⃣ Boş hali → tüm depoları getirir
         public async Task<List<DepoDto>> GetAllAsync()
         {
             var depolar = await _depoRepository.GetAllAsync();
+            return _mapper.Map<List<DepoDto>>(depolar);
+        }
+
+        // 2️⃣ Predicate ile → filtreli getir
+        public async Task<List<DepoDto>> GetAllAsync(Expression<Func<Depo, bool>> predicate)
+        {
+            var depolar = await _depoRepository.GetAllAsync(predicate);
             return _mapper.Map<List<DepoDto>>(depolar);
         }
 
@@ -59,6 +67,12 @@ namespace RuhsaProject.Business.Services
         public async Task DeleteAsync(int id)
         {
             await _depoRepository.DeleteAsync(id);
+        }
+
+        // 3️⃣ Depo entity olarak getir → direkt entity lazım çünkü DepoBilgiDto oluşturacağız
+        public async Task<List<Depo>> GetListByRuhsatSinifiIdAsync(int ruhsatSinifiId)
+        {
+            return await _depoRepository.GetAllAsync(x => x.RuhsatSinifiId == ruhsatSinifiId);
         }
     }
 }

@@ -2,6 +2,7 @@
 using RuhsaProject.Core.Interfaces;
 using RuhsaProject.Entities.Concrete;
 using RuhsatProject.DataAccess.Contexts;
+using System.Linq.Expressions;
 
 namespace RuhsaProject.DataAccess.EntityFramework.Repositories
 {
@@ -53,5 +54,13 @@ namespace RuhsaProject.DataAccess.EntityFramework.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<List<Depo>> GetAllAsync(Expression<Func<Depo, bool>> predicate)
+        {
+            return await _context.Depolar
+                                 .Include(d => d.RuhsatSinifi) // RuhsatSinifi dahil
+                                 .Where(predicate)
+                                 .ToListAsync();
+        }
+
     }
 }

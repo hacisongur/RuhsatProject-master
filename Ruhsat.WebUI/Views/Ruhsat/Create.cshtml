@@ -98,6 +98,10 @@
                                 </select>
                                 <span asp-validation-for="RuhsatSinifiId" class="text-danger"></span>
                             </div>
+                            <!-- Depo Bilgileri Dinamik Alanı -->
+                            <div id="depoBilgileriContainer" class="mb-3">
+                                <!-- Dinamik olarak DepoBilgileri inputları buraya gelecek -->
+                            </div>
 
                             <div class="mb-3 col-md-6">
                                 <label asp-for="Adres" class="form-label"></label>
@@ -152,14 +156,13 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         // Fotoğraf önizleme ve sıfırlama scriptleri
         const uploadInput = document.getElementById('upload');
         const previewImage = document.getElementById('uploadedPhotoPreview');
-        const defaultPhotoSrc = previewImage.src; // Varsayılan fotoğrafın kaynağını sakla
+        const defaultPhotoSrc = previewImage.src;
 
         uploadInput.addEventListener('change', function () {
             const file = this.files[0];
@@ -169,38 +172,87 @@
         });
 
         function resetPreview() {
-            previewImage.src = defaultPhotoSrc; // Varsayılan kaynağa geri dön
-            uploadInput.value = ''; // File inputunu temizle
+            previewImage.src = defaultPhotoSrc;
+            uploadInput.value = '';
         }
 
         // Ruhsat Sınıfı divini Ruhsat Türü seçimine göre göster/gizle
         function toggleRuhsatSinifiDiv(selectedRuhsatTuruId) {
             const ruhsatSinifiDiv = document.getElementById('ruhsatSinifiDiv');
+            const gayrisihhiMueseseId = 2;
 
-            // Veritabanınızdaki "Gayrisihhi Müessese" Ruhsat Türü'nün gerçek ID'si
-            const gayrisihhiMueseseId = 2; // Gayrisihhi Müessese ID'si
-
-            // selectedRuhsatTuruId değeri string olarak gelir. ID'yi stringe çevirerek karşılaştırma yapıyoruz.
             if (selectedRuhsatTuruId == gayrisihhiMueseseId.toString()) {
                 ruhsatSinifiDiv.style.display = 'block';
             } else {
                 ruhsatSinifiDiv.style.display = 'none';
-                // Gizlendiğinde Ruhsat Sınıfı seçimini temizle
+
+                // RuhsatSinifi temizle
                 const ruhsatSinifiSelect = ruhsatSinifiDiv.querySelector('select');
                 if (ruhsatSinifiSelect) {
                     ruhsatSinifiSelect.value = "";
                 }
+
+                // Depoları da temizle
+                const container = document.getElementById('depoBilgileriContainer');
+                container.innerHTML = '';
             }
+        }
+
+        // Depoları getirip dinamik input oluştur
+        function loadDepolarByRuhsatSinifiId(ruhsatSinifiId) {
+            console.log("loadDepolarByRuhsatSinifiId çağrıldı → RuhsatSinifiId:", ruhsatSinifiId);
+
+            const container = document.getElementById('depoBilgileriContainer');
+            container.innerHTML = '';
+
+            if (!ruhsatSinifiId) return;
+
+            // doğru URL kullanımı (Razor ile)
+            var depoUrl = '@Url.Action("GetDepolarByRuhsatSinifiId", "Depo")';
+
+            $.get(depoUrl, { ruhsatSinifiId })
+                .done(function (depolar) {
+                    console.log("AJAX Response geldi →", depolar);
+
+                    if (depolar && depolar.length > 0) {
+                        depolar.forEach((depo, index) => {
+                            const depoHtml = `
+                                        <div class="mb-3">
+                                            <label class="form-label">Depo: ${depo.adi}</label>
+                                            <input type="hidden" name="DepoBilgileri[${index}].DepoId" value="${depo.id}" />
+                                            <input type="hidden" name="DepoBilgileri[${index}].DepoAdi" value="${depo.adi}" />
+                                            <input type="text" class="form-control" name="DepoBilgileri[${index}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
+                                        </div>`;
+                            console.log("Adding Depo HTML:", depoHtml);
+                            container.insertAdjacentHTML('beforeend', depoHtml);
+                        });
+                    } else {
+                        container.innerHTML = '<div class="alert alert-info">Seçilen Ruhsat Sınıfına ait depo bulunmamaktadır.</div>';
+                    }
+                })
+                .fail(function (xhr, status, error) {
+                    console.error("AJAX ERROR →", status, error, xhr.responseText);
+                });
         }
 
         // Sayfa yüklendiğinde başlangıç durumunu ayarla
         $(document).ready(function () {
             const ruhsatTuruSelect = document.querySelector('select[asp-for="RuhsatTuruId"]');
             if (ruhsatTuruSelect) {
-                // Mevcut değeri kullanarak divi ayarla (Edit sayfası için önemli)
                 toggleRuhsatSinifiDiv(ruhsatTuruSelect.value);
             }
-        });
 
+            // Ruhsat Sınıfı değiştiğinde her zaman Depoları getir
+            $('select[asp-for="RuhsatSinifiId"]').on('change', function () {
+                const ruhsatSinifiId = $(this).val();
+                loadDepolarByRuhsatSinifiId(ruhsatSinifiId);
+            });
+
+            // Eğer RuhsatSinifiId seçili ise (Edit için) → Depoları yükle
+            const currentRuhsatSinifiId = $('select[asp-for="RuhsatSinifiId"]').val();
+            if (currentRuhsatSinifiId) {
+                loadDepolarByRuhsatSinifiId(currentRuhsatSinifiId);
+            }
+        });
     </script>
 }

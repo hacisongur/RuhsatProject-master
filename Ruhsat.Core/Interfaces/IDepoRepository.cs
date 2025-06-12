@@ -1,5 +1,6 @@
 ﻿
 using RuhsaProject.Entities.Concrete;
+using System.Linq.Expressions;
 
 namespace RuhsaProject.Core.Interfaces
 {
@@ -10,5 +11,7 @@ namespace RuhsaProject.Core.Interfaces
         Task AddAsync(Depo depo); // Yeni Depo ekler
         Task UpdateAsync(Depo depo); // Mevcut Depo'yu günceller
         Task DeleteAsync(int id); // Depo'yu siler
+        Task<List<Depo>> GetAllAsync(Expression<Func<Depo, bool>> predicate); // BUNU EKLE
+
     }
 }

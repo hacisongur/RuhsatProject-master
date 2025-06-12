@@ -122,5 +122,22 @@ namespace RuhsatProject.WebUI.Controllers
 
             await _logService.AddLogAsync(userId, userName, action, "Depo", description, ip);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetDepolarByRuhsatSinifiId(int ruhsatSinifiId)
+        {
+            var depolar = await _depoService.GetListByRuhsatSinifiIdAsync(ruhsatSinifiId);
+
+            // DEBUG → Şunu buraya koy ve kontrol et:
+            Console.WriteLine($"DepoController → GetDepolarByRuhsatSinifiId çağrıldı → RuhsatSinifiId: {ruhsatSinifiId}, Depo Sayısı: {depolar.Count}");
+
+            var result = depolar.Select(x => new
+            {
+                id = x.Id,
+                adi = x.Adi
+            }).ToList();
+
+            return Json(result);
+        }
+
     }
 }
