@@ -19,6 +19,7 @@ namespace RuhsatProject.DataAccess.Contexts
         public DbSet<RuhsatTuru> RuhsatTurleri { get; set; }
         public DbSet<RuhsatSinifi> RuhsatSiniflari { get; set; }
         public DbSet<Depo> Depolar { get; set; }
+        public DbSet<DepoBilgi> DepoBilgileri { get; set; } // ⭐ Eksikti → Bunu Ekle
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -61,6 +62,17 @@ namespace RuhsatProject.DataAccess.Contexts
                 .WithMany()
                 .HasForeignKey(d => d.RuhsatSinifiId);
 
+            // Ruhsat - DepoBilgi (1 -> N)
+            modelBuilder.Entity<DepoBilgi>()
+                .HasOne(db => db.Ruhsat)
+                .WithMany(r => r.DepoBilgileri)
+                .HasForeignKey(db => db.RuhsatId);
+
+            // Depo - DepoBilgi (1 -> N)
+            modelBuilder.Entity<DepoBilgi>()
+                .HasOne(db => db.Depo)
+                .WithMany() // Depo tarafında ICollection yok → WithMany boş kalır
+                .HasForeignKey(db => db.DepoId);
 
             // Mapping sınıfları
             modelBuilder.ApplyConfiguration(new RuhsatMap());
@@ -75,6 +87,8 @@ namespace RuhsatProject.DataAccess.Contexts
             modelBuilder.ApplyConfiguration(new RolePermissionMap());
             modelBuilder.ApplyConfiguration(new LogEntryMap());
             modelBuilder.ApplyConfiguration(new DepoMap());
+            modelBuilder.ApplyConfiguration(new DepoBilgiMap());
+
 
         }
     }

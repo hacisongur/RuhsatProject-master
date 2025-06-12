@@ -36,5 +36,6 @@ namespace RuhsatProject.Entities.Concrete
         public string? Pafta { get; set; }
         // Aktiflik durumu
         public bool? IsActive { get; set; }
+        public ICollection<DepoBilgi> DepoBilgileri { get; set; } = new List<DepoBilgi>();
     }
 }

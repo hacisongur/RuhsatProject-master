@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RuhsatProject.DataAccess.Contexts;
 
@@ -11,9 +12,11 @@ using RuhsatProject.DataAccess.Contexts;
 namespace RuhsaProject.DataAccess.Migrations
 {
     [DbContext(typeof(RuhsatDbContext))]
-    partial class RuhsatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250612113619_Add_Depobilgi_Table")]
+    partial class Add_Depobilgi_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
