@@ -8,5 +8,6 @@ namespace RuhsaProject.DTOs.DepoDtos
         public string DepoAdi { get; set; }  // Depo Adı → Bu inputu da gönderiyorsun!
 
         public string Bilgi { get; set; }  // Kullanıcının girdiği bilgi (stok / adet / açıklama)
+
     }
 }

@@ -100,6 +100,7 @@
                             </div>
                             <!-- Depo Bilgileri Dinamik Alanı -->
                             <div id="depoBilgileriContainer" class="mb-3">
+
                                 <!-- Dinamik olarak DepoBilgileri inputları buraya gelecek -->
                             </div>
 
@@ -159,6 +160,13 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // HTML Escape için yardımcı fonksiyon
+        function escapeHtml(text) {
+            var div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Fotoğraf önizleme ve sıfırlama scriptleri
         const uploadInput = document.getElementById('upload');
         const previewImage = document.getElementById('uploadedPhotoPreview');
@@ -174,41 +182,6 @@
         function resetPreview() {
             previewImage.src = defaultPhotoSrc;
             uploadInput.value = '';
-        }
-
-        // Ruhsat Sınıfı divini Ruhsat Türü seçimine göre göster/gizle
-        function toggleRuhsatSinifiDiv(selectedRuhsatTuruId) {
-            const ruhsatSinifiDiv = document.getElementById('ruhsatSinifiDiv');
-            const gayrisihhiMueseseId = 2;
-
-            if (selectedRuhsatTuruId == gayrisihhiMueseseId.toString()) {
-                ruhsatSinifiDiv.style.display = 'block';
-
-                // RuhsatSınıfı seçili ise Depoları yükle
-                const ruhsatSinifiSelect = ruhsatSinifiDiv.querySelector('select');
-                if (ruhsatSinifiSelect) {
-                    const selectedRuhsatSinifiId = ruhsatSinifiSelect.value;
-                    if (selectedRuhsatSinifiId) {
-                        loadDepolarByRuhsatSinifiId(selectedRuhsatSinifiId);
-                    } else {
-                        // Eğer RuhsatSınıfı henüz seçilmemişse → depo container temizle
-                        const container = document.getElementById('depoBilgileriContainer');
-                        container.innerHTML = '';
-                    }
-                }
-            } else {
-                ruhsatSinifiDiv.style.display = 'none';
-
-                // RuhsatSinifi temizle
-                const ruhsatSinifiSelect = ruhsatSinifiDiv.querySelector('select');
-                if (ruhsatSinifiSelect) {
-                    ruhsatSinifiSelect.value = "";
-                }
-
-                // Depoları da temizle
-                const container = document.getElementById('depoBilgileriContainer');
-                container.innerHTML = '';
-            }
         }
 
         // Depoları getirip dinamik input oluştur
@@ -227,16 +200,34 @@
                     console.log("AJAX Response geldi →", depolar);
 
                     if (depolar && depolar.length > 0) {
-                        depolar.forEach((depo, index) => {
-                            const depoHtml = `
-                                <div class="mb-3">
-                                    <label class="form-label">Depo: ${depo.adi}</label>
-                                    <input type="hidden" name="DepoBilgileri[${index}].DepoId" value="${depo.id}" />
-                                    <input type="hidden" name="DepoBilgileri[${index}].DepoAdi" value="${depo.adi}" />
-                                    <input type="text" class="form-control" name="DepoBilgileri[${index}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
+                        for (let i = 0; i < depolar.length; i += 2) {
+                            let rowHtml = `<div class="row mb-3">`;
+
+                            // Depo 1
+                            const depo1 = depolar[i];
+                            rowHtml += `
+                                <div class="col-md-6">
+                                    <label class="form-label">Depo: ${escapeHtml(depo1.adi)}</label>
+                                    <input type="hidden" name="DepoBilgileri[${i}].DepoId" value="${depo1.id}" />
+                                    <input type="hidden" name="DepoBilgileri[${i}].DepoAdi" value="${escapeHtml(depo1.adi)}" />
+                                    <input type="text" class="form-control" name="DepoBilgileri[${i}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
                                 </div>`;
-                            container.insertAdjacentHTML('beforeend', depoHtml);
-                        });
+
+                            // Depo 2 (varsa)
+                            if (i + 1 < depolar.length) {
+                                const depo2 = depolar[i + 1];
+                                rowHtml += `
+                                <div class="col-md-6">
+                                    <label class="form-label">Depo: ${escapeHtml(depo2.adi)}</label>
+                                    <input type="hidden" name="DepoBilgileri[${i + 1}].DepoId" value="${depo2.id}" />
+                                    <input type="hidden" name="DepoBilgileri[${i + 1}].DepoAdi" value="${escapeHtml(depo2.adi)}" />
+                                    <input type="text" class="form-control" name="DepoBilgileri[${i + 1}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
+                                </div>`;
+                            }
+
+                            rowHtml += `</div>`; // row kapanışı
+                            container.insertAdjacentHTML('beforeend', rowHtml);
+                        }
                     } else {
                         container.innerHTML = '<div class="alert alert-info">Seçilen Ruhsat Sınıfına ait depo bulunmamaktadır.</div>';
                     }
@@ -246,8 +237,48 @@
                 });
         }
 
+        // RuhsatSinifi change handler → ayrı fonksiyon yaptık
+        function ruhsatSinifiChangeHandler() {
+            const ruhsatSinifiId = this.value;
+            loadDepolarByRuhsatSinifiId(ruhsatSinifiId);
+        }
+
+        // Ruhsat Sınıfı divini Ruhsat Türü seçimine göre göster/gizle
+        function toggleRuhsatSinifiDiv(selectedRuhsatTuruId) {
+            const ruhsatSinifiDiv = document.getElementById('ruhsatSinifiDiv');
+            const gayrisihhiMueseseId = 2;
+
+            if (selectedRuhsatTuruId == gayrisihhiMueseseId.toString()) {
+                ruhsatSinifiDiv.style.display = 'block';
+
+                const ruhsatSinifiSelect = ruhsatSinifiDiv.querySelector('select');
+
+                // Her açılışta garanti event bind → önce eskiyi temizle
+                ruhsatSinifiSelect.removeEventListener('change', ruhsatSinifiChangeHandler);
+                ruhsatSinifiSelect.addEventListener('change', ruhsatSinifiChangeHandler);
+
+                // Eğer RuhsatSinifi zaten seçiliyse → depoları yükle
+                if (ruhsatSinifiSelect && ruhsatSinifiSelect.value) {
+                    loadDepolarByRuhsatSinifiId(ruhsatSinifiSelect.value);
+                } else {
+                    const container = document.getElementById('depoBilgileriContainer');
+                    container.innerHTML = '';
+                }
+            } else {
+                ruhsatSinifiDiv.style.display = 'none';
+
+                const ruhsatSinifiSelect = ruhsatSinifiDiv.querySelector('select');
+                if (ruhsatSinifiSelect) {
+                    ruhsatSinifiSelect.value = "";
+                }
+
+                const container = document.getElementById('depoBilgileriContainer');
+                container.innerHTML = '';
+            }
+        }
+
         // Sayfa yüklendiğinde başlangıç durumunu ayarla
-           $(document).ready(function () {
+        $(document).ready(function () {
             const ruhsatTuruSelect = document.querySelector('select[asp-for="RuhsatTuruId"]');
             const ruhsatSinifiSelect = document.querySelector('select[asp-for="RuhsatSinifiId"]');
 
@@ -261,13 +292,7 @@
                 toggleRuhsatSinifiDiv(this.value);
             });
 
-            // RuhsatSinifi değiştiğinde her zaman Depoları getir → BURAYA DELEGATION koyuyorsun
-            $(document).on('change', 'select[asp-for="RuhsatSinifiId"]', function () {
-                const ruhsatSinifiId = $(this).val();
-                loadDepolarByRuhsatSinifiId(ruhsatSinifiId);
-            });
-
-            // Eğer RuhsatSinifiId seçili ise (örneğin Edit için) → Depoları yükle
+            // İlk açılışta → eğer zaten RuhsatTuruId=2 ve RuhsatSinifiId seçili ise → depoları yükle
             const currentRuhsatSinifiId = $('select[asp-for="RuhsatSinifiId"]').val();
             const currentRuhsatTuruId = $('select[asp-for="RuhsatTuruId"]').val();
 
@@ -275,8 +300,9 @@
                 loadDepolarByRuhsatSinifiId(currentRuhsatSinifiId);
             }
         });
-
     </script>
 }
+
+
 
 

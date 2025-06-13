@@ -37,9 +37,31 @@ namespace RuhsatProject.Business.Services
 
         public async Task AddAsync(RuhsatDto dto)
         {
-            var entity = _mapper.Map<Ruhsat>(dto);
-            await _ruhsatRepository.AddAsync(entity);
+            // 1️⃣ Ruhsat kaydet
+            var ruhsatEntity = _mapper.Map<Ruhsat>(dto);
+            await _ruhsatRepository.AddAsync(ruhsatEntity);
+
+            // 2️⃣ DepoBilgileri kaydet (eğer varsa)
+            if (dto.DepoBilgileri != null && dto.DepoBilgileri.Count > 0)
+            {
+                foreach (var depoBilgiDto in dto.DepoBilgileri)
+                {
+                    var depoBilgi = new DepoBilgi
+                    {
+                        RuhsatId = ruhsatEntity.Id, // Ruhsat FK
+                        DepoId = depoBilgiDto.DepoId,
+                        DepoAdi = depoBilgiDto.DepoAdi,
+                        Bilgi = depoBilgiDto.Bilgi
+                    };
+
+                    await _dbContext.DepoBilgileri.AddAsync(depoBilgi);
+                }
+
+                // DepoBilgileri için SaveChanges
+                await _dbContext.SaveChangesAsync();
+            }
         }
+
 
         public async Task UpdateAsync(RuhsatDto dto)
         {
