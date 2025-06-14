@@ -43,6 +43,11 @@ namespace RuhsatProject.DataAccess.EntityFramework.Mappings
 
             builder.Property(r => r.IsActive).HasDefaultValue(true);
 
+            // DepoBilgileri ilişkisi
+            builder.HasMany(r => r.DepoBilgileri)
+                   .WithOne(db => db.Ruhsat)
+                   .HasForeignKey(db => db.RuhsatId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

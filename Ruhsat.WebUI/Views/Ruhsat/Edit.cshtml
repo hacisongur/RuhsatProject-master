@@ -100,6 +100,39 @@
                                 <span asp-validation-for="RuhsatSinifiId" class="text-danger"></span>
                             </div>
 
+                            <div id="depoBilgileriContainer" class="mb-3">
+                                @if (Model.DepoBilgileri != null && Model.DepoBilgileri.Count > 0)
+                                {
+                                    for (int i = 0; i < Model.DepoBilgileri.Count; i += 2)
+                                    {
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Depo: @Model.DepoBilgileri[i].DepoAdi</label>
+                                                <input type="hidden" name="DepoBilgileri[@i].DepoId"
+                                                       value="@Model.DepoBilgileri[i].DepoId" />
+                                                <input type="hidden" name="DepoBilgileri[@i].DepoAdi"
+                                                       value="@Model.DepoBilgileri[i].DepoAdi" />
+                                                <input type="text" class="form-control" name="DepoBilgileri[@i].Bilgi"
+                                                       value="@Model.DepoBilgileri[i].Bilgi"
+                                                       placeholder="Depoya ait bilgi giriniz" />
+                                            </div>
+                                            @if (i + 1 < Model.DepoBilgileri.Count)
+                                            {
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Depo: @Model.DepoBilgileri[i + 1].DepoAdi</label>
+                                                    <input type="hidden" name="DepoBilgileri[@(i + 1)].DepoId"
+                                                           value="@Model.DepoBilgileri[i + 1].DepoId" />
+                                                    <input type="hidden" name="DepoBilgileri[@(i + 1)].DepoAdi"
+                                                           value="@Model.DepoBilgileri[i + 1].DepoAdi" />
+                                                    <input type="text" class="form-control" name="DepoBilgileri[@(i + 1)].Bilgi"
+                                                           value="@Model.DepoBilgileri[i + 1].Bilgi"
+                                                           placeholder="Depoya ait bilgi giriniz" />
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                }
+                            </div>
                             <div class="mb-3 col-md-6">
                                 <label asp-for="Adres" class="form-label"></label>
                                 <input asp-for="Adres" class="form-control" />
@@ -129,6 +162,7 @@
                                 <textarea asp-for="Not" class="form-control" rows="3"></textarea>
                                 <span asp-validation-for="Not" class="text-danger"></span>
                             </div>
+
 
                             <div class="row mb-4">
                                 <div class="col-md-6 d-flex align-items-center">
@@ -182,7 +216,7 @@
             const ruhsatSinifiDiv = document.getElementById('ruhsatSinifiDiv');
 
             // Veritabanınızdaki "Gayrisihhi Müessese" Ruhsat Türü'nün gerçek ID'si
-            const gayrisihhiMueseseId = 6; // Gayrisihhi Müessese ID'si
+            const gayrisihhiMueseseId = 2; // Gayrisihhi Müessese ID'si
 
             // selectedRuhsatTuruId değeri string olarak gelir. ID'yi stringe çevirerek karşılaştırma yapıyoruz.
             if (selectedRuhsatTuruId == gayrisihhiMueseseId.toString()) {
@@ -197,13 +231,29 @@
             }
         }
 
-        // Sayfa yüklendiğinde başlangıç durumunu ayarla, fotoğraf kaynağını yakala ve sıfırlama butonuna olay dinleyicisi ekle
+        function depoInputVarMi() {
+            return $('#depoBilgileriContainer input[type="text"]').length > 0;
+        }
+
         $(document).ready(function () {
             const ruhsatTuruSelect = document.querySelector('select[asp-for="RuhsatTuruId"]');
+            const ruhsatSinifiSelect = document.querySelector('select[asp-for="RuhsatSinifiId"]');
+
             if (ruhsatTuruSelect) {
-                // Mevcut değeri kullanarak divi ayarla (Edit sayfası için önemli)
                 toggleRuhsatSinifiDiv(ruhsatTuruSelect.value);
             }
+
+            // SADECE depo inputları YOKSA AJAX ile ekle!
+            if (!depoInputVarMi() && ruhsatTuruSelect && ruhsatTuruSelect.value == '2' && ruhsatSinifiSelect && ruhsatSinifiSelect.value) {
+                loadDepolarByRuhsatSinifiId(ruhsatSinifiSelect.value);
+            }
+
+            // Ruhsat Sınıfı değiştiğinde de kontrol et!
+            $('select[asp-for="RuhsatSinifiId"]').on('change', function () {
+                if (!depoInputVarMi()) {
+                    loadDepolarByRuhsatSinifiId(this.value);
+                }
+            });
 
             // Sayfa tamamen yüklendikten sonra fotoğrafın başlangıç kaynağını yakala
             initialPhotoSrc = previewImage.src;
@@ -214,6 +264,51 @@
                 resetButton.addEventListener('click', resetPreview);
             }
         });
+
+        function loadDepolarByRuhsatSinifiId(ruhsatSinifiId) {
+            const container = document.getElementById('depoBilgileriContainer');
+            container.innerHTML = '';
+
+            if (!ruhsatSinifiId) return;
+
+            var depoUrl = '@Url.Action("GetDepolarByRuhsatSinifiId", "Depo")';
+
+            $.get(depoUrl, { ruhsatSinifiId })
+                .done(function (depolar) {
+                    if (depolar && depolar.length > 0) {
+                        for (let i = 0; i < depolar.length; i += 2) {
+                            let rowHtml = `<div class="row mb-3">`;
+
+                            // Depo 1
+                            const depo1 = depolar[i];
+                            rowHtml += `
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Depo: ${depo1.adi}</label>
+                                                    <input type="hidden" name="DepoBilgileri[${i}].DepoId" value="${depo1.id}" />
+                                                    <input type="hidden" name="DepoBilgileri[${i}].DepoAdi" value="${depo1.adi}" />
+                                                    <input type="text" class="form-control" name="DepoBilgileri[${i}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
+                                                </div>`;
+
+                            // Depo 2 (varsa)
+                            if (i + 1 < depolar.length) {
+                                const depo2 = depolar[i + 1];
+                                rowHtml += `
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Depo: ${depo2.adi}</label>
+                                                    <input type="hidden" name="DepoBilgileri[${i + 1}].DepoId" value="${depo2.id}" />
+                                                    <input type="hidden" name="DepoBilgileri[${i + 1}].DepoAdi" value="${depo2.adi}" />
+                                                    <input type="text" class="form-control" name="DepoBilgileri[${i + 1}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
+                                                </div>`;
+                            }
+
+                            rowHtml += `</div>`;
+                            container.insertAdjacentHTML('beforeend', rowHtml);
+                        }
+                    } else {
+                        container.innerHTML = '<div class="alert alert-info">Seçilen Ruhsat Sınıfına ait depo bulunmamaktadır.</div>';
+                    }
+                });
+        }
 
     </script>
 }

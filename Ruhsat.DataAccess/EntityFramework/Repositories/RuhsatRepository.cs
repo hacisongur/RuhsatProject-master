@@ -32,6 +32,7 @@ namespace RuhsatProject.DataAccess.EntityFramework.Repositories
                 .Include(r => r.FaaliyetKonusu)
                 .Include(r => r.RuhsatTuru)
                 .Include(r => r.RuhsatSinifi)
+                .Include(r => r.DepoBilgileri)
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
@@ -39,7 +40,6 @@ namespace RuhsatProject.DataAccess.EntityFramework.Repositories
         public async Task AddAsync(Ruhsat ruhsat)
         {
             await _context.Ruhsatlar.AddAsync(ruhsat);
-            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Ruhsat updatedEntity)

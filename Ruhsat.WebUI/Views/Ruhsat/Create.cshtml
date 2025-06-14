@@ -3,6 +3,11 @@
     ViewData["Title"] = "Yeni Ruhsat Oluştur";
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@Html.Raw(TempData["ErrorMessage"])</div>
+}
+
 <h4 class="fw-bold py-3 mb-4">Yeni Ruhsat Oluştur</h4>
 
 <div class="container py-4">
@@ -98,10 +103,22 @@
                                 </select>
                                 <span asp-validation-for="RuhsatSinifiId" class="text-danger"></span>
                             </div>
-                            <!-- Depo Bilgileri Dinamik Alanı -->
                             <div id="depoBilgileriContainer" class="mb-3">
-
-                                <!-- Dinamik olarak DepoBilgileri inputları buraya gelecek -->
+                                @if (Model.DepoBilgileri != null && Model.DepoBilgileri.Count > 0)
+                                {
+                                    for (int i = 0; i < Model.DepoBilgileri.Count; i++)
+                                    {
+                                        <div class="mb-3">
+                                            <label class="form-label">Depo: @Model.DepoBilgileri[i].DepoAdi</label>
+                                            <input type="hidden" name="DepoBilgileri[@i].DepoId"
+                                                value="@Model.DepoBilgileri[i].DepoId" />
+                                            <input type="hidden" name="DepoBilgileri[@i].DepoAdi"
+                                                value="@Model.DepoBilgileri[i].DepoAdi" />
+                                            <input type="text" class="form-control" name="DepoBilgileri[@i].Bilgi"
+                                                value="@Model.DepoBilgileri[i].Bilgi" placeholder="Depoya ait bilgi giriniz" />
+                                        </div>
+                                    }
+                                }
                             </div>
 
                             <div class="mb-3 col-md-6">
@@ -186,10 +203,12 @@
 
         // Depoları getirip dinamik input oluştur
         function loadDepolarByRuhsatSinifiId(ruhsatSinifiId) {
-            console.log("loadDepolarByRuhsatSinifiId çağrıldı → RuhsatSinifiId:", ruhsatSinifiId);
-
             const container = document.getElementById('depoBilgileriContainer');
-            container.innerHTML = '';
+
+            // Eğer zaten input varsa, yeni input ekleme!
+            if (depoInputVarMi()) {
+                return;
+            }
 
             if (!ruhsatSinifiId) return;
 
@@ -197,8 +216,6 @@
 
             $.get(depoUrl, { ruhsatSinifiId })
                 .done(function (depolar) {
-                    console.log("AJAX Response geldi →", depolar);
-
                     if (depolar && depolar.length > 0) {
                         for (let i = 0; i < depolar.length; i += 2) {
                             let rowHtml = `<div class="row mb-3">`;
@@ -206,34 +223,31 @@
                             // Depo 1
                             const depo1 = depolar[i];
                             rowHtml += `
-                                <div class="col-md-6">
-                                    <label class="form-label">Depo: ${escapeHtml(depo1.adi)}</label>
-                                    <input type="hidden" name="DepoBilgileri[${i}].DepoId" value="${depo1.id}" />
-                                    <input type="hidden" name="DepoBilgileri[${i}].DepoAdi" value="${escapeHtml(depo1.adi)}" />
-                                    <input type="text" class="form-control" name="DepoBilgileri[${i}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
-                                </div>`;
+                                                        <div class="col-md-6">
+                                                            <label class="form-label">Depo: ${depo1.adi}</label>
+                                                            <input type="hidden" name="DepoBilgileri[${i}].DepoId" value="${depo1.id}" />
+                                                            <input type="hidden" name="DepoBilgileri[${i}].DepoAdi" value="${depo1.adi}" />
+                                                            <input type="text" class="form-control" name="DepoBilgileri[${i}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
+                                                        </div>`;
 
                             // Depo 2 (varsa)
                             if (i + 1 < depolar.length) {
                                 const depo2 = depolar[i + 1];
                                 rowHtml += `
-                                <div class="col-md-6">
-                                    <label class="form-label">Depo: ${escapeHtml(depo2.adi)}</label>
-                                    <input type="hidden" name="DepoBilgileri[${i + 1}].DepoId" value="${depo2.id}" />
-                                    <input type="hidden" name="DepoBilgileri[${i + 1}].DepoAdi" value="${escapeHtml(depo2.adi)}" />
-                                    <input type="text" class="form-control" name="DepoBilgileri[${i + 1}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
-                                </div>`;
+                                                            <div class="col-md-6">
+                                                                <label class="form-label">Depo: ${depo2.adi}</label>
+                                                                <input type="hidden" name="DepoBilgileri[${i + 1}].DepoId" value="${depo2.id}" />
+                                                                <input type="hidden" name="DepoBilgileri[${i + 1}].DepoAdi" value="${depo2.adi}" />
+                                                                <input type="text" class="form-control" name="DepoBilgileri[${i + 1}].Bilgi" placeholder="Depoya ait bilgi giriniz" />
+                                                            </div>`;
                             }
 
-                            rowHtml += `</div>`; // row kapanışı
+                            rowHtml += `</div>`;
                             container.insertAdjacentHTML('beforeend', rowHtml);
                         }
                     } else {
                         container.innerHTML = '<div class="alert alert-info">Seçilen Ruhsat Sınıfına ait depo bulunmamaktadır.</div>';
                     }
-                })
-                .fail(function (xhr, status, error) {
-                    console.error("AJAX ERROR →", status, error, xhr.responseText);
                 });
         }
 
@@ -277,32 +291,29 @@
             }
         }
 
-        // Sayfa yüklendiğinde başlangıç durumunu ayarla
+        function depoInputVarMi() {
+            return $('#depoBilgileriContainer input[type="text"]').length > 0;
+        }
+
         $(document).ready(function () {
             const ruhsatTuruSelect = document.querySelector('select[asp-for="RuhsatTuruId"]');
             const ruhsatSinifiSelect = document.querySelector('select[asp-for="RuhsatSinifiId"]');
 
-            // İlk yüklemede RuhsatTürü kontrol et → RuhsatSınıfı Divini ayarla + gerekirse Depoları yükle
             if (ruhsatTuruSelect) {
                 toggleRuhsatSinifiDiv(ruhsatTuruSelect.value);
             }
 
-            // RuhsatTuru değiştiğinde → RuhsatSinifiDiv aç/kapa ve Depoları yükle/temizle
-            $('select[asp-for="RuhsatTuruId"]').on('change', function () {
-                toggleRuhsatSinifiDiv(this.value);
-            });
-
-            // İlk açılışta → eğer zaten RuhsatTuruId=2 ve RuhsatSinifiId seçili ise → depoları yükle
-            const currentRuhsatSinifiId = $('select[asp-for="RuhsatSinifiId"]').val();
-            const currentRuhsatTuruId = $('select[asp-for="RuhsatTuruId"]').val();
-
-            if (currentRuhsatTuruId == '2' && currentRuhsatSinifiId) {
-                loadDepolarByRuhsatSinifiId(currentRuhsatSinifiId);
+            // SADECE depo inputları YOKSA AJAX ile ekle!
+            if (!depoInputVarMi() && ruhsatTuruSelect && ruhsatTuruSelect.value == '2' && ruhsatSinifiSelect && ruhsatSinifiSelect.value) {
+                loadDepolarByRuhsatSinifiId(ruhsatSinifiSelect.value);
             }
+
+            // Ruhsat Sınıfı değiştiğinde de kontrol et!
+            $('select[asp-for="RuhsatSinifiId"]').on('change', function () {
+                if (!depoInputVarMi()) {
+                    loadDepolarByRuhsatSinifiId(this.value);
+                }
+            });
         });
     </script>
 }
-
-
-
-

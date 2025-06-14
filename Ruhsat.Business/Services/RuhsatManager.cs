@@ -15,12 +15,12 @@ namespace RuhsatProject.Business.Services
     {
         private readonly IRuhsatRepository _ruhsatRepository;
         private readonly IMapper _mapper;
-        private readonly RuhsatDbContext _dbContext;  
+        private readonly RuhsatDbContext _dbContext;
         public RuhsatManager(IRuhsatRepository ruhsatRepository, IMapper mapper, RuhsatDbContext dbContext)
         {
             _ruhsatRepository = ruhsatRepository;
             _mapper = mapper;
-            _dbContext = dbContext;  
+            _dbContext = dbContext;
         }
 
         public async Task<List<RuhsatDto>> GetAllAsync()
@@ -37,28 +37,37 @@ namespace RuhsatProject.Business.Services
 
         public async Task AddAsync(RuhsatDto dto)
         {
-            // 1️⃣ Ruhsat kaydet
-            var ruhsatEntity = _mapper.Map<Ruhsat>(dto);
-            await _ruhsatRepository.AddAsync(ruhsatEntity);
-
-            // 2️⃣ DepoBilgileri kaydet (eğer varsa)
-            if (dto.DepoBilgileri != null && dto.DepoBilgileri.Count > 0)
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
             {
-                foreach (var depoBilgiDto in dto.DepoBilgileri)
-                {
-                    var depoBilgi = new DepoBilgi
-                    {
-                        RuhsatId = ruhsatEntity.Id, // Ruhsat FK
-                        DepoId = depoBilgiDto.DepoId,
-                        DepoAdi = depoBilgiDto.DepoAdi,
-                        Bilgi = depoBilgiDto.Bilgi
-                    };
+                // Ana ruhsat kaydını oluştur
+                var ruhsat = _mapper.Map<Ruhsat>(dto);
+                await _ruhsatRepository.AddAsync(ruhsat);
+                await _dbContext.SaveChangesAsync();
 
-                    await _dbContext.DepoBilgileri.AddAsync(depoBilgi);
+                // DepoBilgileri'ni ekle
+                if (dto.DepoBilgileri != null && dto.DepoBilgileri.Any())
+                {
+                    foreach (var depoBilgiDto in dto.DepoBilgileri)
+                    {
+                        var depoBilgi = new DepoBilgi
+                        {
+                            RuhsatId = ruhsat.Id,
+                            DepoId = depoBilgiDto.DepoId,
+                            DepoAdi = depoBilgiDto.DepoAdi,
+                            Bilgi = depoBilgiDto.Bilgi
+                        };
+                        await _dbContext.DepoBilgileri.AddAsync(depoBilgi);
+                    }
+                    await _dbContext.SaveChangesAsync();
                 }
 
-                // DepoBilgileri için SaveChanges
-                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
             }
         }
 
@@ -67,6 +76,28 @@ namespace RuhsatProject.Business.Services
         {
             var entity = _mapper.Map<Ruhsat>(dto);
             await _ruhsatRepository.UpdateAsync(entity);
+
+            // Eski DepoBilgileri'ni sil
+            var eskiDepolar = _dbContext.DepoBilgileri.Where(x => x.RuhsatId == dto.Id);
+            _dbContext.DepoBilgileri.RemoveRange(eskiDepolar);
+
+            // Yeni DepoBilgileri'ni ekle
+            if (dto.DepoBilgileri != null && dto.DepoBilgileri.Count > 0)
+            {
+                foreach (var depoBilgiDto in dto.DepoBilgileri)
+                {
+                    var depoBilgi = new DepoBilgi
+                    {
+                        RuhsatId = dto.Id,
+                        DepoId = depoBilgiDto.DepoId,
+                        DepoAdi = depoBilgiDto.DepoAdi,
+                        Bilgi = depoBilgiDto.Bilgi
+                    };
+                    await _dbContext.DepoBilgileri.AddAsync(depoBilgi);
+                }
+            }
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -74,6 +105,6 @@ namespace RuhsatProject.Business.Services
             await _ruhsatRepository.DeleteAsync(id);
         }
 
-        
+
     }
 }
