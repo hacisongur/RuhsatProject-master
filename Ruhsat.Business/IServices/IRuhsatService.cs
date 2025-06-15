@@ -1,6 +1,5 @@
-﻿using RuhsaProject.Entities.Concrete;
+﻿
 using RuhsatProject.DTOs.Ruhsat;
-using System.Linq.Expressions;
 
 namespace RuhsatProject.Business.IServices
 {
@@ -12,5 +11,12 @@ namespace RuhsatProject.Business.IServices
         Task UpdateAsync(RuhsatDto dto);
         Task DeleteAsync(int id);
 
+        // Dashboard metotları
+        Task<int> GetTotalRuhsatCountAsync();
+        Task<int> GetMonthlyRuhsatCountAsync();
+        Task<int> GetDailyRuhsatCountAsync();
+        Task<int> GetTotalFaaliyetKonusuCountAsync();
+        Task<int> GetTotalRuhsatTuruCountAsync();
     }
+
 }

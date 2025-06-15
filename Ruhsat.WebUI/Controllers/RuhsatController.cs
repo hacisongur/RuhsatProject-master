@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Rotativa.AspNetCore;
+using RuhsaProject.Business.IServices;
 using RuhsaProject.Entities.Concrete;
 using RuhsaProject.WebUI.Controllers;
 using RuhsatProject.Business.IServices;
 using RuhsatProject.DTOs.Ruhsat;
+using System.Security.Claims;
 namespace RuhsatProject.WebUI.Controllers
 {
     [Authorize(Roles = "User,Editor,Admin")]
@@ -16,6 +18,7 @@ namespace RuhsatProject.WebUI.Controllers
         private readonly IFaaliyetKonusuService _faaliyetKonusuService;
         private readonly IRuhsatTuruService _ruhsatTuruService;
         private readonly IRuhsatSinifiService _ruhsatSinifiService;
+        private readonly ILogService _logService;
 
         public RuhsatController(
             IRuhsatService ruhsatService,
@@ -23,12 +26,13 @@ namespace RuhsatProject.WebUI.Controllers
             IFaaliyetKonusuService faaliyetKonusuService,
             IRuhsatTuruService ruhsatTuruService,
             IRuhsatSinifiService ruhsatSinifiService,
-            UserManager<User> userManager) : base(userManager)
+            UserManager<User> userManager,ILogService logService) : base(userManager)
         {
             _ruhsatService = ruhsatService;
             _faaliyetKonusuService = faaliyetKonusuService;
             _ruhsatTuruService = ruhsatTuruService;
             _ruhsatSinifiService = ruhsatSinifiService;
+            _logService = logService;
         }
 
         // RuhsatController
@@ -110,6 +114,7 @@ namespace RuhsatProject.WebUI.Controllers
 
                 // Veritabanına kaydetme işlemi
                 await _ruhsatService.AddAsync(dto);
+                await LogAsync("Create", $"Yeni ruhsat eklendi: {dto.Adi} {dto.Soyadi} - Ruhsat No: {dto.RuhsatNo}");
                 TempData["SuccessMessage"] = "Ruhsat başarıyla eklendi.";
                 return RedirectToAction(nameof(Index));
             }
@@ -207,6 +212,7 @@ namespace RuhsatProject.WebUI.Controllers
                 }
 
                 await _ruhsatService.UpdateAsync(dto);
+                await LogAsync("Update", $"Ruhsat güncellendi: ID {dto.Id} - {dto.Adi} {dto.Soyadi}");
                 TempData["SuccessMessage"] = "Ruhsat başarıyla güncellendi.";
                 return RedirectToAction(nameof(Index));
             }
@@ -252,7 +258,7 @@ namespace RuhsatProject.WebUI.Controllers
             ruhsat.ScannedFilePath = "/uploads/scans/" + uniqueScanName;
 
             await _ruhsatService.UpdateAsync(ruhsat);
-
+            await LogAsync("UploadScan", $"Taranmış dosya yüklendi: Ruhsat ID {ruhsat.Id}, Dosya: {ruhsat.ScannedFilePath}");
             TempData["SuccessMessage"] = "Taranmış dosya başarıyla yüklendi.";
             return RedirectToAction(nameof(Index));
         }
@@ -279,6 +285,7 @@ namespace RuhsatProject.WebUI.Controllers
             }
 
             await _ruhsatService.DeleteAsync(id);
+            await LogAsync("Delete", $"Ruhsat silindi: ID {ruhsat?.Id} - {ruhsat?.Adi} {ruhsat?.Soyadi}");
             TempData["SuccessMessage"] = "Ruhsat başarıyla silindi.";
             return RedirectToAction(nameof(Index));
         }
@@ -288,7 +295,7 @@ namespace RuhsatProject.WebUI.Controllers
         {
             var ruhsat = await _ruhsatService.GetByIdAsync(id);
             if (ruhsat == null) return NotFound();
-
+            await LogAsync("GenerateReport", $"PDF raporu oluşturuldu: Ruhsat ID {ruhsat.Id}, Ruhsat No: {ruhsat.RuhsatNo}");
             return new ViewAsPdf("_RuhsatPdf", ruhsat)
             {
                 FileName = $"Ruhsat_{ruhsat.RuhsatNo}.pdf",
@@ -298,6 +305,27 @@ namespace RuhsatProject.WebUI.Controllers
                 CustomSwitches = "--disable-smart-shrinking" // ✅ Eklenmesi önerilir
             };
         }
+        [HttpPost]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            var ruhsat = await _ruhsatService.GetByIdAsync(id);
+            if (ruhsat == null)
+                return NotFound();
 
+            ruhsat.IsActive = !ruhsat.IsActive;
+            await _ruhsatService.UpdateAsync(ruhsat);
+            await LogAsync("StatusToggle", $"Ruhsat aktiflik durumu değiştirildi: ID {ruhsat.Id} → Aktif: {ruhsat.IsActive}");
+
+            return Json(new { success = true, newStatus = ruhsat.IsActive });
+        }
+        private async Task LogAsync(string action, string description)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userName = User.Identity?.Name ?? "Unknown";
+            var ip = HttpContext.Connection?.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _logService.AddLogAsync(userId, userName, action, "Ruhsat", description, ip);
+        }
+       
     }
 }

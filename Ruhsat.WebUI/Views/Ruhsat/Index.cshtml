@@ -6,13 +6,6 @@
 
 <div class="card">
     <div class="card-body">
-        <div class="d-flex justify-content-between mb-3">
-            <div class="input-group" style="width: 300px;">
-                <input type="text" id="tableSearchInput" class="form-control form-control-sm" placeholder="Ruhsat arama..." />
-                <span class="input-group-text"><i class="ti ti-search"></i></span>
-            </div>
-
-        </div>
 
         <div class="table-responsive">
             <table class="table table-sm datatables-basic w-100">
@@ -36,7 +29,7 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr>
+                        <tr data-id="@item.Id" class="clickable-row">
                             <td>@item.RuhsatNo</td>
                             <td>@item.TcKimlikNo</td>
                             <td>@item.Adi @item.Soyadi</td>
@@ -54,19 +47,22 @@
                                 }
                             </td>
                             <td>
-                                @if (item.IsActive)
-                                {
-                                    <span class="badge rounded-pill bg-label-success">
-                                        <i class="ti ti-check me-1"></i> Aktif
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge rounded-pill bg-label-danger">
-                                        <i class="ti ti-x me-1"></i> Pasif
-                                    </span>
-                                }
+                                <span class="badge rounded-pill toggle-status"
+                                      style="cursor:pointer"
+                                      data-id="@item.Id"
+                                      data-status="@item.IsActive.ToString().ToLower()"
+                                      title="Durumu değiştir">
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="bg-label-success"><i class="ti ti-check me-1"></i> Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="bg-label-danger"><i class="ti ti-x me-1"></i> Pasif</span>
+                                    }
+                                </span>
                             </td>
+
                             <td>
                                 @if (!string.IsNullOrEmpty(item.PhotoPath))
                                 {
@@ -193,7 +189,7 @@
         $(document).ready(function () {
             var table = $('.datatables-basic').DataTable({
                 scrollX: true,
-                order: [[0, 'desc']], // Ruhsat No'ya göre azalan sıralama
+                order: [[7, 'desc']], // Veriliş Tarihi kolonu
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json'
                 },
@@ -214,7 +210,7 @@
                         title: 'Ruhsat Listesi',
                         text: '<i class="ti ti-file-spreadsheet me-1"></i> Excel',
                         className: 'btn btn-sm btn-outline-success me-1',
-                        exportOptions: { columns: [0,1,2,3,4,5,6,7,8,9] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
                     },
                     {
                         extend: 'pdfHtml5',
@@ -223,43 +219,77 @@
                         className: 'btn btn-sm btn-outline-danger me-1',
                         orientation: 'landscape',
                         pageSize: 'A4',
-                        exportOptions: { columns: [0,1,2,3,4,5,6,7,8,9] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
                     },
                     {
                         extend: 'print',
                         title: 'Ruhsat Listesi',
                         text: '<i class="ti ti-printer me-1"></i> Yazdır',
                         className: 'btn btn-sm btn-outline-primary',
-                        exportOptions: { columns: [0,1,2,3,4,5,6,7,8,9] }
+                        exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
                     }
                 ],
                 lengthMenu: [10, 25, 50, 100],
                 pageLength: 10
             });
 
-            // Özel arama: İlk 7 kolonda büyük-küçük harf duyarsız arama
-            $('#tableSearchInput').on('keyup', function () {
-                var searchTerm = this.value.toLowerCase();
+              $('#customRuhsatSearch').on('keyup', function () {
+            const searchTerm = this.value.toLowerCase();
+            $.fn.dataTable.ext.search = [];
 
-                // Önce varsa eklenmiş filtreleri temizle
-                $.fn.dataTable.ext.search = [];
+            if (searchTerm) {
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let combinedData = '';
+                    for (let i = 0; i < 7; i++) {
+                        combinedData += data[i].toLowerCase() + ' ';
+                    }
+                    return combinedData.includes(searchTerm);
+                });
+            }
 
-                if (searchTerm) {
-                    $.fn.dataTable.ext.search.push(function (settings, data) {
-                        var combinedData = '';
-                        for (var i = 0; i < 7; i++) {  
-                            combinedData += data[i].toLowerCase() + ' ';
-                        }
-                        combinedData = combinedData.trim();
-                        return combinedData.indexOf(searchTerm) !== -1;
-                    });
+            table.draw();
+        });
+
+
+            // ✅ Tıklanabilir satır yönlendirme (Edit sayfasına)
+            $(document).on('click', '.clickable-row', function (e) {
+                if (!$(e.target).closest('a, button, i, .toggle-status').length) {
+                    const ruhsatId = $(this).data('id');
+                    if (ruhsatId) {
+                        window.location.href = '/Ruhsat/Edit/' + ruhsatId;
+                    }
                 }
+            });
 
-                table.draw();
+            // ✅ Aktiflik durumunu AJAX ile toggle et
+            $(document).on('click', '.toggle-status', function (e) {
+                e.stopPropagation();
+                const badge = $(this);
+                const ruhsatId = badge.data('id');
+
+                $.ajax({
+                    url: '/Ruhsat/ToggleStatus',
+                    type: 'POST',
+                    data: { id: ruhsatId },
+                    success: function (res) {
+                        if (res.success) {
+                            const isActive = res.newStatus;
+                            const newBadge = isActive
+                                ? `<span class="bg-label-success"><i class="ti ti-check me-1"></i> Aktif</span>`
+                                : `<span class="bg-label-danger"><i class="ti ti-x me-1"></i> Pasif</span>`;
+
+                            badge.html(newBadge);
+                            badge.attr("data-status", isActive.toString().toLowerCase());
+                        }
+                    },
+                    error: function () {
+                        alert("Durum güncellenirken bir hata oluştu.");
+                    }
+                });
             });
         });
 
-        // Fotoğraf Modal
+        // ✅ Fotoğraf Modal
         const photoModal = document.getElementById('photoModal');
         if (photoModal) {
             photoModal.addEventListener('show.bs.modal', function (event) {
@@ -272,7 +302,7 @@
             });
         }
 
-        // Taranmış Belge Yükleme Modal
+        // ✅ Taranmış Belge Yükleme Modal
         const uploadScanModal = document.getElementById('uploadScanModal');
         if (uploadScanModal) {
             uploadScanModal.addEventListener('show.bs.modal', function (event) {
@@ -282,7 +312,7 @@
             });
         }
 
-        // Taranmış Belge Önizleme Modal
+        // ✅ Taranmış Belge Önizleme Modal
         const scanPreviewModal = document.getElementById('scanPreviewModal');
         if (scanPreviewModal) {
             scanPreviewModal.addEventListener('show.bs.modal', function (event) {
@@ -293,7 +323,6 @@
 
                 if (scanPath) {
                     const extension = scanPath.split('.').pop().toLowerCase();
-
                     if (['jpg', 'jpeg', 'png'].includes(extension)) {
                         scanContent.innerHTML = `<img src="${scanPath}" class="img-fluid rounded shadow" style="max-height: 600px;" alt="Taranmış Belge" />`;
                     } else if (extension === 'pdf') {
@@ -307,6 +336,8 @@
             });
         }
     </script>
+
+
 }
 
 

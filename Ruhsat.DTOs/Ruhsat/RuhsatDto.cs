@@ -64,7 +64,10 @@ namespace RuhsatProject.DTOs.Ruhsat
         [DisplayName("Aktif Mi?")]
         public bool IsActive { get; set; }
         public List<DepoBilgiDto> DepoBilgileri { get; set; } = new List<DepoBilgiDto>();
-
+        [DisplayName("Oluşturma Tarihi")]
+        public DateTime CreatedDate { get; set; }
+        [DisplayName("Değiştirilme Tarihi")]
+        public DateTime? ModifiedDate { get; set; }
 
     }
 }

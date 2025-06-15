@@ -37,5 +37,8 @@ namespace RuhsatProject.Entities.Concrete
         // Aktiflik durumu
         public bool? IsActive { get; set; }
         public ICollection<DepoBilgi> DepoBilgileri { get; set; } = new List<DepoBilgi>();
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime? ModifiedDate { get; set; }
+
     }
 }

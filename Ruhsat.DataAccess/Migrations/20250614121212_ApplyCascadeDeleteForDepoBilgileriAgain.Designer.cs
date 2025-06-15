@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RuhsatProject.DataAccess.Contexts;
 
@@ -11,9 +12,11 @@ using RuhsatProject.DataAccess.Contexts;
 namespace RuhsaProject.DataAccess.Migrations
 {
     [DbContext(typeof(RuhsatDbContext))]
-    partial class RuhsatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250614121212_ApplyCascadeDeleteForDepoBilgileriAgain")]
+    partial class ApplyCascadeDeleteForDepoBilgileriAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -323,14 +326,14 @@ namespace RuhsaProject.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "41a45c0d-42a5-4427-8f59-181f1cdd0a9a",
+                            ConcurrencyStamp = "bae8919b-a488-4873-b1e7-fae64e4c46a3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "6c180dfa-add7-4f30-8ce2-24cd24c17c2f",
+                            ConcurrencyStamp = "6339cca6-e144-4a36-9977-2613c39d2da4",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         });
@@ -664,17 +667,17 @@ namespace RuhsaProject.DataAccess.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "092e3f00-f546-42cf-9651-0d998f9de53b",
+                            ConcurrencyStamp = "12e66e68-7129-4b42-bcc6-15840a4afb2e",
                             Email = "adminuser@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMINUSER@GMAIL.COM",
                             NormalizedUserName = "ADMINUSER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEi91Wvn0bUBI3HupSjxJ2jbYLTAslJbo3Am+UnRlpK9yZ/tZSL2RhpWD2et1pr0OQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBWaxZs4szNDhhbFXLRpEWaPJQv9XN7d+wyPlZbyFUgSNXLlUPkAeMidUhDDaYBkow==",
                             PhoneNumber = "+905555555555",
                             PhoneNumberConfirmed = true,
                             Picture = "defaultUser.png",
-                            SecurityStamp = "a4d4ca75-c2ee-41fd-b8a7-8235443ad443",
+                            SecurityStamp = "3f16e555-d7e4-4fa8-bb76-453a710932a9",
                             TwoFactorEnabled = false,
                             UserName = "adminuser"
                         },
@@ -682,17 +685,17 @@ namespace RuhsaProject.DataAccess.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f88d4c4e-1591-45a8-bbb5-00b8104ae77f",
+                            ConcurrencyStamp = "7f7a969a-78a0-49c9-8c76-ca7808ee8915",
                             Email = "editoruser@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "EDITORUSER@GMAIL.COM",
                             NormalizedUserName = "EDITORUSER",
-                            PasswordHash = "AQAAAAIAAYagAAAAELnzZY7NrhKge4R6VUREsaSGPdAw4qxxuUYbPPzmVSBFwlpXg3Bae5UGv9s7lLr4FQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFXYZ2MMw2uOP5NzCMlBsTdKMyTZAA6G8hZyohCeyVrVhMzi5cbhw8oqwO2xABpXCg==",
                             PhoneNumber = "+905555555555",
                             PhoneNumberConfirmed = true,
                             Picture = "defaultUser.png",
-                            SecurityStamp = "037bbfd8-af47-48be-ae91-17cb47e497a5",
+                            SecurityStamp = "e3402bc6-5d8d-417f-aef9-4312a17842e9",
                             TwoFactorEnabled = false,
                             UserName = "editoruser"
                         });
@@ -830,9 +833,6 @@ namespace RuhsaProject.DataAccess.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("FaaliyetKonusuId")
                         .HasColumnType("int");
 
@@ -844,9 +844,6 @@ namespace RuhsaProject.DataAccess.Migrations
                     b.Property<string>("IsyeriUnvani")
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Not")
                         .HasMaxLength(500)

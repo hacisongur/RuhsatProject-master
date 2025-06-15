@@ -1,7 +1,7 @@
 ﻿@{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
-    var roles = ViewBag.UserRoles as IList<string> ?? new List<string>();
+    var roles = ViewBag.UserRoles as IList<string> ?? new List<string>();  
 }
 
 <!-- Menu -->
@@ -47,7 +47,6 @@
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-smart-home"></i>
                 <div>Admin Paneli</div>
-                <div class="badge bg-danger rounded-pill ms-auto">5</div>
             </a>
             <ul class="menu-sub">
                 <!-- Site Analiz hem Admin hem User, Editor için gösteriliyor -->
