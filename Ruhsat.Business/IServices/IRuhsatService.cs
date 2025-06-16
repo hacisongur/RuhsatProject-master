@@ -11,12 +11,7 @@ namespace RuhsatProject.Business.IServices
         Task UpdateAsync(RuhsatDto dto);
         Task DeleteAsync(int id);
 
-        // Dashboard metotları
-        Task<int> GetTotalRuhsatCountAsync();
-        Task<int> GetMonthlyRuhsatCountAsync();
-        Task<int> GetDailyRuhsatCountAsync();
-        Task<int> GetTotalFaaliyetKonusuCountAsync();
-        Task<int> GetTotalRuhsatTuruCountAsync();
+
     }
 
 }

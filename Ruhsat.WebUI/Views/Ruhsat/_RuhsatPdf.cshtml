@@ -83,7 +83,7 @@
                 padding: 2px 3px;
                 vertical-align: top;
                 line-height: 1.6;
-                font-size: 18px;
+                font-size: 16px;
             }
 
             .content-table tr {
@@ -94,7 +94,7 @@
             font-weight: bold;
             width: 20%;
             white-space: nowrap;
-            font-size: 20px;
+            font-size: 16px;
         }
 
         .photo {
@@ -215,13 +215,39 @@
 
             </tr>
         </table>
-
         <table class="content-table">
             <tr>
-                <td class="label">İşyeri Sınıfı </td>
-                <td>: @Model.RuhsatTuru?.Name</td>
+             <td class="label">İşyeri Sınıfı </td>
+<td>
+    :
+    @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
+    {
+        <text>@Model.RuhsatSinifi?.Name</text>  <!-- Örn: 1. Sınıf -->
+    }
+    else
+    {
+        <text>….sınıf</text>
+    }
+
+    &nbsp;&nbsp;
+
+    <!-- Dinamik olarak sadece 1 defa ruhsat türünü yaz -->
+    <text>(X) @Model.RuhsatTuru?.Name</text>
+
+    &nbsp;&nbsp;
+                    <!-- Sıhhi Müessese sabit gösterim -->
+                    @if (Model.RuhsatTuru?.Name == "Sıhhi Müessese")
+                    {
+                        <text>(X) Sıhhi Müessese</text>
+                    }
+                    else
+                    {
+                        <text>( ) Sıhhi Müessese</text>
+                    }
+                </td>
             </tr>
         </table>
+
         <table style="width: 100%; table-layout: fixed; margin-top: 4px;">
             <tr>
                 <td style="white-space: nowrap; text-align: left; font-size: 17px; padding: 0;">

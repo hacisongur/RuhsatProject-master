@@ -105,33 +105,7 @@ namespace RuhsatProject.Business.Services
         {
             await _ruhsatRepository.DeleteAsync(id);
         }
-        // Dashboard verileri
-        public async Task<int> GetTotalRuhsatCountAsync()
-        {
-            return await _dbContext.Ruhsatlar.CountAsync();
-        }
-
-        public async Task<int> GetMonthlyRuhsatCountAsync()
-        {
-            var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            return await _dbContext.Ruhsatlar.CountAsync(r => r.CreatedDate >= startOfMonth);
-        }
-
-        public async Task<int> GetDailyRuhsatCountAsync()
-        {
-            var today = DateTime.Today;
-            return await _dbContext.Ruhsatlar.CountAsync(r => r.CreatedDate >= today);
-        }
-
-        public async Task<int> GetTotalFaaliyetKonusuCountAsync()
-        {
-            return await _dbContext.FaaliyetKonulari.CountAsync();
-        }
-
-        public async Task<int> GetTotalRuhsatTuruCountAsync()
-        {
-            return await _dbContext.RuhsatTurleri.CountAsync();
-        }
+  
 
 
     }
