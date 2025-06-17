@@ -14,29 +14,36 @@
             height: 100%;
             margin: 0;
             padding: 0;
+            /* Let .wrapper and Rotativa handle spacing */
             font-family: 'Arial', sans-serif;
             font-size: 12px;
+            box-sizing: border-box;
         }
 
         .wrapper {
             position: relative;
-            width: 100%;
-            height: 1122px;
+            width: 764px;
+            /* A4 width (794px) - 2 * (5px desired margin + 10px border) = 794 - 30 = 764px */
+            height: 1093px;
+            /* A4 height (1123px) - 2 * (5px desired margin + 10px border) = 1123 - 30 = 1093px */
             box-sizing: border-box;
-            border: 10px solid #1d4ea4;
+            border: 6px solid #1d4ea4;
+            /* Blue frame */
             padding: 40px 25px 25px 25px;
+            /* Inner padding for content */
+            margin: 5px auto;
+            /* 5px margin from PDF edge and horizontally center */
         }
 
         .footer {
-            position: absolute;
-            bottom: 10px;
-            left: 25px;
-            right: 25px;
+            position: relative;
             font-size: 11pt;
             font-weight: 400;
             color: #000;
             font-family: 'Arial Black', Arial, sans-serif;
             text-align: left;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         .header {
@@ -79,16 +86,16 @@
             margin-bottom: 20px;
         }
 
-            .content-table td {
-                padding: 2px 3px;
-                vertical-align: top;
-                line-height: 1.6;
-                font-size: 16px;
-            }
+        .content-table td {
+            padding: 2px 3px;
+            vertical-align: top;
+            line-height: 1.6;
+            font-size: 16px;
+        }
 
-            .content-table tr {
-                padding-bottom: 4px;
-            }
+        .content-table tr {
+            padding-bottom: 4px;
+        }
 
         .label {
             font-weight: bold;
@@ -107,14 +114,6 @@
             object-fit: cover;
         }
 
-        .signature {
-            text-align: right;
-            position: absolute;
-            bottom: 60px;
-            right: 40px;
-            font-size: 11pt;
-        }
-
         .row-three-cols {
             width: 100%;
             border-collapse: collapse;
@@ -127,17 +126,47 @@
             table-layout: fixed;
         }
 
-            .row-three-cols td {
-                padding: 1px 2px;
-                font-size: 16px;
-                white-space: nowrap;
-                vertical-align: top;
-            }
+        .row-three-cols td {
+            padding: 1px 2px;
+            font-size: 16px;
+            white-space: nowrap;
+            vertical-align: top;
+        }
+
+        /* İmza bloğu: sağa yaslı */
+        .signature-block {
+            position: relative;
+            width: 100%;
+            text-align: right;
+            margin-top: 250px;
+            margin-bottom: 30px;
+            padding-right: 40px; /* sağdan boşluk */
+        }
+
+        /* İsim */
+        .signature-name {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* ORTA başlık - ama yine sağda hizalı, padding ile ortalanmış gibi görünür */
+        .signature-title-main {
+            font-size: 14pt;
+            margin-bottom: 5px;
+            display: inline-block;
+            min-width: 180px;
+            text-align: center;
+        }
+
+        /* Alt görev satırı */
+        .signature-title-sub {
+            font-size: 14pt;
+        }
 
 
-
-
-        @@media print {
+        @@media print
+        {
             /* PDF kenar boşlukları yazıcıdan ayarlanmalı */
         }
     </style>
@@ -148,7 +177,7 @@
         <div class="header">
             <img src="@($"{Context.Request.Scheme}://{Context.Request.Host}/img/logo-2.png")" class="logo" alt="Logo" />
             <div class="header-text">
-                <br /><br /><br /><br />
+                <br />
                 T.C. <br />
                 BATMAN <br />
                 BELEDİYE BAŞKANLIĞI
@@ -160,9 +189,9 @@
         </div>
 
         @if (!string.IsNullOrEmpty(Model.PhotoPath))
-        {
-            <img class="photo" src="@Model.PhotoPath" alt="Fotoğraf" />
-        }
+                {
+                <img class="photo" src="@Model.PhotoPath" alt="Fotoğraf" />
+            }
 
         <!-- Ana bilgiler -->
         <table class="content-table">
@@ -200,50 +229,41 @@
             </tr>
         </table>
 
-        <!-- Ada / Pafta / Parsel -->
-        <table class="row-three-cols" style="width: 100%;">
-            <tr>
-                <td style="white-space: nowrap; width: 45%;">
-                    <span style="font-weight: bold;">İşyerinin Bulunduğu Yer Ada No :</span> @Model.Ada
-                </td>
-                <td style="white-space: nowrap; width: 27.5%;">
-                    <span style="font-weight: bold;">Pafta :</span> @Model.Pafta
-                </td>
-                <td style="white-space: nowrap; width: 27.5%;">
-                    <span style="font-weight: bold;">Parsel :</span> @Model.Parsel
-                </td>
-
-            </tr>
-        </table>
-        <table class="content-table">
-            <tr>
-             <td class="label">İşyeri Sınıfı </td>
-<td>
-    :
-    @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
-    {
-        <text>@Model.RuhsatSinifi?.Name</text>  <!-- Örn: 1. Sınıf -->
-    }
-    else
-    {
-        <text>….sınıf</text>
-    }
-
-    &nbsp;&nbsp;
-
-    <!-- Dinamik olarak sadece 1 defa ruhsat türünü yaz -->
-    <text>(X) @Model.RuhsatTuru?.Name</text>
-
-    &nbsp;&nbsp;
-                    <!-- Sıhhi Müessese sabit gösterim -->
-                    @if (Model.RuhsatTuru?.Name == "Sıhhi Müessese")
-                    {
-                        <text>(X) Sıhhi Müessese</text>
-                    }
-                    else
-                    {
-                        <text>( ) Sıhhi Müessese</text>
-                    }
+            <!-- Ada / Pafta / Parsel -->
+            <table class="row-three-cols" style="width: 100%;">
+                <tr>
+                    <td style="white-space: nowrap; width: 45%;">
+                        <span style="font-weight: bold;">İşyerinin Bulunduğu Yer Ada No :</span> @Model.Ada
+                    </td>
+                    <td style="white-space: nowrap; width: 27.5%;">
+                        <span style="font-weight: bold;">Pafta :</span> @Model.Pafta
+                    </td>
+                    <td style="white-space: nowrap; width: 27.5%;">
+                        <span style="font-weight: bold;">Parsel :</span> @Model.Parsel
+                    </td>
+                </tr>
+            </table>
+            <table class="content-table">
+                <tr>
+                    <td class="label">İşyeri Sınıfı </td>
+                    <td>
+                        : @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
+                                        {
+                            <text>@Model.RuhsatSinifi?.Name</text>
+                        }
+                                        else
+                                        {
+                            <text>….sınıf</text>
+                        }
+                    &nbsp;&nbsp;&nbsp;&nbsp;@Model.RuhsatTuru?.Name (X)
+                    &nbsp;&nbsp;&nbsp;&nbsp;@if (Model.RuhsatTuru?.Name == "Sıhhi Müessese")
+                                        {
+                            <text>Sıhhi Müessese (X)</text>
+                        }
+                                        else
+                                        {
+                            <text>Sıhhi Müessese ( )</text>
+                        }
                 </td>
             </tr>
         </table>
@@ -257,24 +277,19 @@
                 </td>
             </tr>
         </table>
-        <!-- İmza bloğu -->
-        <div style="position: relative; width: 100%; height: 90px; margin-top: 60px;">
-            <!-- Üst satır sağda -->
-            <div style="position: absolute; top: 0; right: 40px; font-size: 16pt; font-weight: bold; text-align: right;">
+        <div class="signature-block">
+            <div class="signature-name">
                 Mustafa Caner CULUKAR
             </div>
 
-            <!-- Ortadaki satır tam sayfa ortasında -->
-            <div style="position: absolute; top: 32px; right: 70px; font-size: 14pt; text-align: center; width: 150px;">
+            <div class="signature-title-main">
                 Başkan a.
             </div>
 
-            <!-- Alt satır sağda -->
-            <div style="position: absolute; bottom: 0; right: 40px; font-size: 14pt; text-align: right;">
+            <div class="signature-title-sub">
                 Belediye Başkan Yardımcısı
             </div>
         </div>
-
 
 
         <div class="footer">

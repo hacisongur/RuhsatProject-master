@@ -47,11 +47,7 @@
                                 }
                             </td>
                             <td>
-                                <span class="badge rounded-pill toggle-status"
-                                      style="cursor:pointer"
-                                      data-id="@item.Id"
-                                      data-status="@item.IsActive.ToString().ToLower()"
-                                      title="Durumu değiştir">
+                                <span class="badge rounded-pill">
                                     @if (item.IsActive)
                                     {
                                         <span class="bg-label-success"><i class="ti ti-check me-1"></i> Aktif</span>
@@ -253,39 +249,12 @@
 
             // ✅ Tıklanabilir satır yönlendirme (Edit sayfasına)
             $(document).on('click', '.clickable-row', function (e) {
-                if (!$(e.target).closest('a, button, i, .toggle-status').length) {
+                if (!$(e.target).closest('a, button, i').length) {
                     const ruhsatId = $(this).data('id');
                     if (ruhsatId) {
                         window.location.href = '/Ruhsat/Edit/' + ruhsatId;
                     }
                 }
-            });
-
-            // ✅ Aktiflik durumunu AJAX ile toggle et
-            $(document).on('click', '.toggle-status', function (e) {
-                e.stopPropagation();
-                const badge = $(this);
-                const ruhsatId = badge.data('id');
-
-                $.ajax({
-                    url: '/Ruhsat/ToggleStatus',
-                    type: 'POST',
-                    data: { id: ruhsatId },
-                    success: function (res) {
-                        if (res.success) {
-                            const isActive = res.newStatus;
-                            const newBadge = isActive
-                                ? `<span class="bg-label-success"><i class="ti ti-check me-1"></i> Aktif</span>`
-                                : `<span class="bg-label-danger"><i class="ti ti-x me-1"></i> Pasif</span>`;
-
-                            badge.html(newBadge);
-                            badge.attr("data-status", isActive.toString().toLowerCase());
-                        }
-                    },
-                    error: function () {
-                        alert("Durum güncellenirken bir hata oluştu.");
-                    }
-                });
             });
         });
 

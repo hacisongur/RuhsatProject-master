@@ -26,7 +26,7 @@ namespace RuhsatProject.WebUI.Controllers
             IFaaliyetKonusuService faaliyetKonusuService,
             IRuhsatTuruService ruhsatTuruService,
             IRuhsatSinifiService ruhsatSinifiService,
-            UserManager<User> userManager,ILogService logService) : base(userManager)
+            UserManager<User> userManager, ILogService logService) : base(userManager)
         {
             _ruhsatService = ruhsatService;
             _faaliyetKonusuService = faaliyetKonusuService;
@@ -301,23 +301,11 @@ namespace RuhsatProject.WebUI.Controllers
                 FileName = $"Ruhsat_{ruhsat.RuhsatNo}.pdf",
                 PageSize = Rotativa.AspNetCore.Options.Size.A4,
                 PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
-                PageMargins = new Rotativa.AspNetCore.Options.Margins(0, 0, 0, 0), // ✅ Burada düzeltme yapıldı
-                CustomSwitches = "--disable-smart-shrinking" // ✅ Eklenmesi önerilir
+                PageMargins = new Rotativa.AspNetCore.Options.Margins(2,2,2,2),
+                CustomSwitches = "--disable-smart-shrinking"
             };
         }
-        [HttpPost]
-        public async Task<IActionResult> ToggleStatus(int id)
-        {
-            var ruhsat = await _ruhsatService.GetByIdAsync(id);
-            if (ruhsat == null)
-                return NotFound();
 
-            ruhsat.IsActive = !ruhsat.IsActive;
-            await _ruhsatService.UpdateAsync(ruhsat);
-            await LogAsync("StatusToggle", $"Ruhsat aktiflik durumu değiştirildi: ID {ruhsat.Id} → Aktif: {ruhsat.IsActive}");
-
-            return Json(new { success = true, newStatus = ruhsat.IsActive });
-        }
         private async Task LogAsync(string action, string description)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -326,6 +314,6 @@ namespace RuhsatProject.WebUI.Controllers
 
             await _logService.AddLogAsync(userId, userName, action, "Ruhsat", description, ip);
         }
-       
+
     }
 }
