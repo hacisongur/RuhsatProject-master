@@ -14,7 +14,6 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            /* Let .wrapper and Rotativa handle spacing */
             font-family: 'Arial', sans-serif;
             font-size: 12px;
             box-sizing: border-box;
@@ -23,28 +22,24 @@
         .wrapper {
             position: relative;
             width: 764px;
-            /* A4 width (794px) - 2 * (5px desired margin + 10px border) = 794 - 30 = 764px */
             height: 1093px;
-            /* A4 height (1123px) - 2 * (5px desired margin + 10px border) = 1123 - 30 = 1093px */
             box-sizing: border-box;
             border: 6px solid #1d4ea4;
-            /* Blue frame */
             padding: 40px 25px 25px 25px;
-            /* Inner padding for content */
             margin: 5px auto;
-            /* 5px margin from PDF edge and horizontally center */
         }
 
         .footer {
             position: relative;
-            font-size: 11pt;
-            font-weight: 400;
+            font-size: 12px;
+            font-weight: bold;
             color: #000;
-            font-family: 'Arial Black', Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: left;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin: 0; /* Boşlukları kaldırdık */
         }
+
+
 
         .header {
             display: flex;
@@ -86,16 +81,12 @@
             margin-bottom: 20px;
         }
 
-        .content-table td {
-            padding: 2px 3px;
-            vertical-align: top;
-            line-height: 1.6;
-            font-size: 16px;
-        }
-
-        .content-table tr {
-            padding-bottom: 4px;
-        }
+            .content-table td {
+                padding: 2px 3px;
+                vertical-align: top;
+                line-height: 1.6;
+                font-size: 16px;
+            }
 
         .label {
             font-weight: bold;
@@ -117,58 +108,44 @@
         .row-three-cols {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
             margin-bottom: 20px;
         }
 
-        .row-three-cols {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
+            .row-three-cols td {
+                padding: 1px 2px;
+                font-size: 16px;
+                white-space: nowrap;
+                vertical-align: top;
+            }
 
-        .row-three-cols td {
-            padding: 1px 2px;
-            font-size: 16px;
-            white-space: nowrap;
-            vertical-align: top;
-        }
-
-        /* İmza bloğu: sağa yaslı */
         .signature-block {
             position: relative;
             width: 100%;
             text-align: right;
             margin-top: 250px;
             margin-bottom: 30px;
-            padding-right: 40px; /* sağdan boşluk */
+            padding-right: 40px;
         }
 
-        /* İsim */
         .signature-name {
-            font-size: 16pt;
+            font-size: 13pt;
             font-weight: bold;
             margin-bottom: 5px;
         }
 
-        /* ORTA başlık - ama yine sağda hizalı, padding ile ortalanmış gibi görünür */
         .signature-title-main {
-            font-size: 14pt;
+            font-size: 12pt;
             margin-bottom: 5px;
             display: inline-block;
             min-width: 180px;
             text-align: center;
         }
 
-        /* Alt görev satırı */
         .signature-title-sub {
-            font-size: 14pt;
+            font-size: 12pt;
         }
 
-
-        @@media print
-        {
-            /* PDF kenar boşlukları yazıcıdan ayarlanmalı */
-        }
     </style>
 </head>
 
@@ -189,39 +166,26 @@
         </div>
 
         @if (!string.IsNullOrEmpty(Model.PhotoPath))
-                {
-                <img class="photo" src="@Model.PhotoPath" alt="Fotoğraf" />
-            }
+        {
+            <img class="photo" src="@Model.PhotoPath" alt="Fotoğraf" />
+        }
 
-        <!-- Ana bilgiler -->
         <table class="content-table">
             <tr>
                 <td class="label">T.C. Kimlik No</td>
                 <td>: @Model.TcKimlikNo</td>
             </tr>
             <tr>
-                <td colspan="2" style="height:6px;"></td>
-            </tr>
-            <tr>
                 <td class="label">Adı Soyadı</td>
                 <td>: @Model.Adi @Model.Soyadi</td>
-            </tr>
-            <tr>
-                <td colspan="2" style="height:6px;"></td>
             </tr>
             <tr>
                 <td class="label">İşyeri Ünvanı</td>
                 <td>: @Model.IsyeriUnvani</td>
             </tr>
             <tr>
-                <td colspan="2" style="height:6px;"></td>
-            </tr>
-            <tr>
                 <td class="label">Faaliyet Konusu</td>
                 <td>: @Model.FaaliyetKonusu?.Name</td>
-            </tr>
-            <tr>
-                <td colspan="2" style="height:6px;"></td>
             </tr>
             <tr>
                 <td class="label">İşyerinin Adresi</td>
@@ -229,45 +193,80 @@
             </tr>
         </table>
 
-            <!-- Ada / Pafta / Parsel -->
-            <table class="row-three-cols" style="width: 100%;">
-                <tr>
-                    <td style="white-space: nowrap; width: 45%;">
-                        <span style="font-weight: bold;">İşyerinin Bulunduğu Yer Ada No :</span> @Model.Ada
-                    </td>
-                    <td style="white-space: nowrap; width: 27.5%;">
-                        <span style="font-weight: bold;">Pafta :</span> @Model.Pafta
-                    </td>
-                    <td style="white-space: nowrap; width: 27.5%;">
-                        <span style="font-weight: bold;">Parsel :</span> @Model.Parsel
-                    </td>
-                </tr>
-            </table>
-            <table class="content-table">
-                <tr>
-                    <td class="label">İşyeri Sınıfı </td>
-                    <td>
-                        : @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
-                                        {
-                            <text>@Model.RuhsatSinifi?.Name</text>
-                        }
-                                        else
-                                        {
-                            <text>….sınıf</text>
-                        }
-                    &nbsp;&nbsp;&nbsp;&nbsp;@Model.RuhsatTuru?.Name (X)
-                    &nbsp;&nbsp;&nbsp;&nbsp;@if (Model.RuhsatTuru?.Name == "Sıhhi Müessese")
-                                        {
-                            <text>Sıhhi Müessese (X)</text>
-                        }
-                                        else
-                                        {
-                            <text>Sıhhi Müessese ( )</text>
-                        }
+        <table class="row-three-cols" style="width: 100%; table-layout: fixed;">
+            <tr>
+                <td style="white-space: nowrap; width: 45%; padding-right: 20px;">
+                    <strong>İşyerinin Bulunduğu Yer Ada No :</strong> @Model.Ada
+                </td>
+                <td style="white-space: nowrap; width: 27.5%; padding-right: 20px;">
+                    <strong>Pafta :</strong> @Model.Pafta
+                </td>
+                <td style="white-space: nowrap; width: 27.5%;">
+                    <strong>Parsel :</strong> @Model.Parsel
                 </td>
             </tr>
         </table>
 
+
+        <table class="content-table">
+            <tr>
+                <td class="label">İşyeri Sınıfı </td>
+                <td>
+                    : @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
+                    {
+                        <text>@Model.RuhsatSinifi?.Name</text>
+                    }
+                                        else
+                    {
+                        <text>….sınıf</text>
+                    }
+
+                    &nbsp;&nbsp;&nbsp;&nbsp;@Model.RuhsatTuru?.Name (X)
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    @if (Model.RuhsatTuru?.Name == "Sıhhi Müessese")
+                    {
+                        <text>Sıhhi Müessese (X)</text>
+                    }
+                    else
+                    {
+                        <text>Sıhhi Müessese ( )</text>
+                    }
+                </td>
+            </tr>
+        </table>
+        @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese" && !string.IsNullOrWhiteSpace(Model.RuhsatSinifi?.Name))
+        {
+            if (Model.DepoBilgileri != null && Model.DepoBilgileri.Any())
+            {
+                var depoGruplari = Model.DepoBilgileri
+                .Select((d, i) => $"{i + 1}.Depo: {d.Bilgi} m&#179;")
+                .Chunk(3)
+                .Select(grup => string.Join("&nbsp;&nbsp;&nbsp;&nbsp;", grup))
+                .ToList();
+
+                <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #000; line-height: 1.6;">
+                    <div>
+                        İşyerinde yanıcı ve parlayıcı madde kategorisindeki sıvıların depolanması amacıyla
+                        bulunacak depoların hacmi*:
+                        @Html.Raw(depoGruplari.FirstOrDefault())
+                    </div>
+                    @foreach (var satir in depoGruplari.Skip(1))
+                    {
+                        <div>@Html.Raw(satir)</div>
+                    }
+                </div>
+            }
+
+            <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #000; white-space: normal; word-break: break-word; line-height: 1.6;">
+                <strong>İşyerinde yanıcı ve parlayıcı madde kategorisindeki sıvılardan depolanmasına izin verilenlerin sınıfı/sınıfları*:</strong>
+                &nbsp;I. Sınıf Benzin, II. Sınıf Motorin, LPG Otogaz
+            </div>
+        }
+
+
+
+        <br />
+        <br />
         <table style="width: 100%; table-layout: fixed; margin-top: 4px;">
             <tr>
                 <td style="white-space: nowrap; text-align: left; font-size: 17px; padding: 0;">
@@ -277,26 +276,31 @@
                 </td>
             </tr>
         </table>
+
         <div class="signature-block">
             <div class="signature-name">
                 Mustafa Caner CULUKAR
             </div>
-
             <div class="signature-title-main">
                 Başkan a.
             </div>
-
             <div class="signature-title-sub">
                 Belediye Başkan Yardımcısı
             </div>
         </div>
 
-
         <div class="footer">
             14/07/2005 Tarihli ve 2005/9207 Sayılı Bakanlar Kurulu Kararı ile yürürlüğe konulan
             İşyeri Açma ve Çalışma Ruhsatlarına İlişkin Yönetmelik kapsamında düzenlenmiştir.
         </div>
+        @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
+        {
+            <div class="footer">
+                * Akaryakıt, sıvılaştırılmış petrol gazı, sıvılaştırılmış doğal gaz ve sıkıştırılmış doğal gaz istasyonu niteliğindeki işyeri için doldurulacaktır.
+            </div>
+        }
+
+
     </div>
 </body>
-
 </html>
