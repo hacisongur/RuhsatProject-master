@@ -2,7 +2,53 @@
 
 @{
     ViewData["Title"] = "Ruhsat Listesi";
+    var cards = ViewBag.DashboardCards as List<RuhsaProject.DTOs.DashboardCardDtos.DashboardCardDto>;
 }
+
+@if (cards != null)
+{
+    <div class="row mb-4">
+        @foreach (var card in cards)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card card-border-shadow-@card.BadgeColor h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="avatar me-4">
+                                <span class="avatar-initial rounded bg-label-@card.BadgeColor">
+                                    <i class="ti @card.Icon ti-28px"></i>
+                                </span>
+                            </div>
+                            <h4 class="mb-0">@card.Value</h4>
+                        </div>
+                        <p class="mb-1">@card.Title</p>
+                        <p class="mb-0">
+                            <span class="text-heading fw-medium me-2">@card.ChangeText</span>
+                            <small class="text-muted">@card.ChangeNote</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+<div class="row mb-2">
+    <div class="col-md-6 d-flex align-items-center gap-2">
+        <label class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="statusFilter" value="all" checked />
+            <span class="form-check-label">Tümü</span>
+        </label>
+        <label class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="statusFilter" value="true" />
+            <span class="form-check-label">Aktif</span>
+        </label>
+        <label class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="statusFilter" value="false" />
+            <span class="form-check-label">Pasif</span>
+        </label>
+    </div>
+</div>
+
 
 <div class="card">
     <div class="card-body">
@@ -181,11 +227,46 @@
     <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/pdfmake/vfs_fonts.js"></script>
     <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons-bs5/js/buttons.html5.min.js"></script>
     <script src="~/vuexy-bootstrap-html-admin-template/assets/vendor/libs/datatables-buttons-bs5/js/buttons.print.min.js"></script>
+
     <script>
         $(document).ready(function () {
+                    // ✅ Vuexy ile uyumlu Aktiflik filtresi radio butonları
+        let statusFilterHtml = `
+            <div class="d-inline-block me-3 align-middle" id="statusFilterGroup">
+                <div class="form-check form-check-inline mb-0">
+                    <input class="form-check-input" type="radio" name="statusFilter" id="radioAll" value="all" checked>
+                    <label class="form-check-label" for="radioAll">Tümü</label>
+                </div>
+                <div class="form-check form-check-inline mb-0">
+                    <input class="form-check-input" type="radio" name="statusFilter" id="radioAktif" value="true">
+                    <label class="form-check-label" for="radioAktif">Aktif</label>
+                </div>
+                <div class="form-check form-check-inline mb-0">
+                    <input class="form-check-input" type="radio" name="statusFilter" id="radioPasif" value="false">
+                    <label class="form-check-label" for="radioPasif">Pasif</label>
+                </div>
+            </div>
+        `;
+
             var table = $('.datatables-basic').DataTable({
                 scrollX: true,
-                order: [[9, 'desc']], // Veriliş Tarihi kolonu
+                order: [],
+                data: [],
+                columns: [
+                    { title: "Ruhsat No" },
+                    { title: "T.C. / Vergi No" },
+                    { title: "Ad Soyad" },
+                    { title: "İşyeri Ünvanı" },
+                    { title: "Faaliyet Konusu" },
+                    { title: "Ruhsat Türü" },
+                    { title: "Adres" },
+                    { title: "Veriliş Tarihi" },
+                    { title: "Açıklama" },
+                    { title: "Aktiflik" },
+                    { title: "Görsel" },
+                    { title: "Taranmış Belge" },
+                    { title: "İşlemler" }
+                ],
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/tr.json'
                 },
@@ -193,8 +274,11 @@
                     "<'row mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 text-end'B>>" +
                     "<'table-responsive'tr>" +
                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+
                 buttons: [
+
                     {
+
                         text: '<i class="ti ti-file-check me-1"></i> Ekle',
                         className: 'btn btn-sm btn-outline-primary me-1',
                         action: function () {
@@ -229,25 +313,137 @@
                 pageLength: 10
             });
 
-              $('#customRuhsatSearch').on('keyup', function () {
-            const searchTerm = this.value.toLowerCase();
-            $.fn.dataTable.ext.search = [];
-
-            if (searchTerm) {
-                $.fn.dataTable.ext.search.push(function (settings, data) {
-                    let combinedData = '';
-                    for (let i = 0; i < 7; i++) {
-                        combinedData += data[i].toLowerCase() + ' ';
-                    }
-                    return combinedData.includes(searchTerm);
-                });
-            }
-
-            table.draw();
+             // ✅ Radyo buton değişince verileri filtrele
+        $(document).on('change', 'input[name="statusFilter"]', function () {
+            const selectedStatus = $('input[name="statusFilter"]:checked').val(); // all | true | false
+            fetchFilteredRuhsatlar(selectedStatus);
         });
 
+        // ✅ Verileri filtreleyen AJAX çağrısı
+        function fetchFilteredRuhsatlar(status) {
+            $.ajax({
+                url: '/Ruhsat/GetByStatus',
+                type: 'GET',
+                data: { status: status },
+                success: function (data) {
+                    table.clear();
 
-            // ✅ Tıklanabilir satır yönlendirme (Edit sayfasına)
+                    data.forEach(item => {
+                        const aktiflikBadge = item.isActive
+                            ? '<span class="badge bg-label-success"><i class="ti ti-check me-1"></i> Aktif</span>'
+                            : '<span class="badge bg-label-danger"><i class="ti ti-x me-1"></i> Pasif</span>';
+
+                        const notPreview = item.not
+                            ? `<span title="${item.not}">${item.not.substring(0, 30)}${item.not.length > 30 ? '...' : ''}</span>`
+                            : '';
+
+                        const fotoBtn = item.photoPath
+                            ? `<button type="button" class="btn btn-sm btn-icon btn-info" data-bs-toggle="modal" data-bs-target="#photoModal" data-photo="${item.photoPath}"><i class="ti ti-eye"></i></button>`
+                            : '<span class="text-muted">Yok</span>';
+
+                        const taranmisBtn = item.scannedFilePath
+                            ? `<button type="button" class="btn btn-sm btn-icon btn-success" data-bs-toggle="modal" data-bs-target="#scanPreviewModal" data-scan="${item.scannedFilePath}"><i class="ti ti-eye"></i></button>`
+                            : `<button type="button" class="btn btn-sm btn-icon btn-secondary" data-bs-toggle="modal" data-bs-target="#uploadScanModal" data-id="${item.id}"><i class="ti ti-upload"></i></button>`;
+
+                        const islemler = `
+                            <div class="d-flex align-items-center">
+                                <a href="/Ruhsat/Edit/${item.id}" class="btn btn-sm btn-icon btn-label-primary me-1"><i class="ti ti-edit"></i></a>
+                                <a href="/Ruhsat/GenerateReport/${item.id}" class="btn btn-sm btn-icon btn-label-info me-1"><i class="ti ti-printer"></i></a>
+                                <a href="/Ruhsat/Delete/${item.id}" class="btn btn-sm btn-icon btn-label-danger"><i class="ti ti-trash-filled"></i></a>
+                            </div>`;
+
+                        table.row.add([
+                            item.ruhsatNo || '',
+                            item.tcKimlikNo || '',
+                            `${item.adi || ''} ${item.soyadi || ''}`.trim(),
+                            item.isyeriUnvani || '',
+                            item.faaliyetKonusu?.name || '',
+                            item.ruhsatTuru?.name || '',
+                            item.adres || '',
+                            item.verilisTarihi ? new Date(item.verilisTarihi).toLocaleDateString('tr-TR') : '',
+                            notPreview,
+                            aktiflikBadge,
+                            fotoBtn,
+                            taranmisBtn,
+                            islemler
+                        ]);
+                    });
+
+                    table.draw();
+                }
+            });
+        }
+
+        // Sayfa ilk yüklendiğinde tüm veriler gelsin
+        fetchFilteredRuhsatlar("all");
+
+
+        // ✅ Radyo butonlarını DataTable’ın buton grubu soluna yerleştir
+        $('.dt-buttons').prepend(statusFilterHtml);
+
+            // ✅ AJAX tabanlı arama
+            $('#customRuhsatSearch').on('keyup', function () {
+                const term = this.value.trim();
+
+                if (term.length === 0) {
+                    table.clear().draw(); // Arama boşsa tabloyu temizle
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Ruhsat/Search',
+                    type: 'GET',
+                    data: { term: term },
+                    success: function (data) {
+                        table.clear();
+
+                        data.forEach(item => {
+                            const aktiflikBadge = item.isActive
+                                ? '<span class="badge bg-label-success"><i class="ti ti-check me-1"></i> Aktif</span>'
+                                : '<span class="badge bg-label-danger"><i class="ti ti-x me-1"></i> Pasif</span>';
+
+                            const notPreview = item.not
+                                ? `<span title="${item.not}">${item.not.substring(0, 30)}${item.not.length > 30 ? '...' : ''}</span>`
+                                : '';
+
+                            const fotoBtn = item.photoPath
+                                ? `<button type="button" class="btn btn-sm btn-icon btn-info" data-bs-toggle="modal" data-bs-target="#photoModal" data-photo="${item.photoPath}"><i class="ti ti-eye"></i></button>`
+                                : '<span class="text-muted">Yok</span>';
+
+                            const taranmisBtn = item.scannedFilePath
+                                ? `<button type="button" class="btn btn-sm btn-icon btn-success" data-bs-toggle="modal" data-bs-target="#scanPreviewModal" data-scan="${item.scannedFilePath}"><i class="ti ti-eye"></i></button>`
+                                : `<button type="button" class="btn btn-sm btn-icon btn-secondary" data-bs-toggle="modal" data-bs-target="#uploadScanModal" data-id="${item.id}"><i class="ti ti-upload"></i></button>`;
+
+                            const islemler = `
+                                <div class="d-flex align-items-center">
+                                    <a href="/Ruhsat/Edit/${item.id}" class="btn btn-sm btn-icon btn-label-primary me-1"><i class="ti ti-edit"></i></a>
+                                    <a href="/Ruhsat/GenerateReport/${item.id}" class="btn btn-sm btn-icon btn-label-info me-1"><i class="ti ti-printer"></i></a>
+                                    <a href="/Ruhsat/Delete/${item.id}" class="btn btn-sm btn-icon btn-label-danger"><i class="ti ti-trash-filled"></i></a>
+                                </div>`;
+
+                            table.row.add([
+                                item.ruhsatNo || '',
+                                item.tcKimlikNo || '',
+                                `${item.adi || ''} ${item.soyadi || ''}`.trim(),
+                                item.isyeriUnvani || '',
+                                item.faaliyetKonusu?.name || '',
+                                item.ruhsatTuru?.name || '',
+                                item.adres || '',
+                                item.verilisTarihi ? new Date(item.verilisTarihi).toLocaleDateString('tr-TR') : '',
+                                notPreview,
+                                aktiflikBadge,
+                                fotoBtn,
+                                taranmisBtn,
+                                islemler
+                            ]);
+                        });
+
+                        table.draw();
+                    }
+                });
+            });
+
+            // ✅ Satır tıklama → Edit sayfasına yönlendir
             $(document).on('click', '.clickable-row', function (e) {
                 if (!$(e.target).closest('a, button, i').length) {
                     const ruhsatId = $(this).data('id');
@@ -258,7 +454,7 @@
             });
         });
 
-        // ✅ Fotoğraf Modal
+        // ✅ Fotoğraf Önizleme Modal
         const photoModal = document.getElementById('photoModal');
         if (photoModal) {
             photoModal.addEventListener('show.bs.modal', function (event) {
@@ -305,8 +501,6 @@
             });
         }
     </script>
-
-
 }
 
 

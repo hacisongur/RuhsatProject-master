@@ -11,5 +11,9 @@ namespace RuhsatProject.Core.Interfaces
         Task AddAsync(Ruhsat ruhsat);
         Task UpdateAsync(Ruhsat ruhsat);
         Task DeleteAsync(int id);
+        Task<List<Ruhsat>> SearchAsync(string term);
+        Task<List<Ruhsat>> GetAllAsync(Expression<Func<Ruhsat, bool>> predicate);
+
+
     }
 }

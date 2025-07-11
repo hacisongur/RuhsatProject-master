@@ -8,7 +8,10 @@ using RuhsaProject.Entities.Concrete;
 using RuhsaProject.WebUI.Controllers;
 using RuhsatProject.Business.IServices;
 using RuhsatProject.DTOs.Ruhsat;
+using System.Globalization;
 using System.Security.Claims;
+
+using System.Globalization;
 namespace RuhsatProject.WebUI.Controllers
 {
     [Authorize(Roles = "User,Editor,Admin")]
@@ -34,13 +37,28 @@ namespace RuhsatProject.WebUI.Controllers
             _ruhsatSinifiService = ruhsatSinifiService;
             _logService = logService;
         }
-
-        // RuhsatController
         public async Task<IActionResult> Index()
         {
-            var ruhsatlar = await _ruhsatService.GetAllAsync(); // Service üzerinden tüm ruhsatları alıyoruz
-            return View(ruhsatlar); // Veriyi view'a gönderiyoruz
+            // 1. Dashboard kartları verisini çek
+            var dashboardCards = await _ruhsatService.GetDashboardCardsAsync();
+
+            // 2. ViewBag ile View'a gönder
+            ViewBag.DashboardCards = dashboardCards;
+
+            // 3. Ruhsat listesini (boş liste olarak) gönder, çünkü ilk yüklemede filtreleme yapılmayacak
+            var emptyList = new List<RuhsatDto>();
+            return View(emptyList);
         }
+        [HttpGet]
+        public async Task<IActionResult> Search(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return Json(new List<RuhsatDto>());
+
+            var filtered = await _ruhsatService.SearchAsync(term);
+            return Json(filtered);
+        }
+
         // GET: Ruhsat/Create
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -314,6 +332,20 @@ namespace RuhsatProject.WebUI.Controllers
 
             await _logService.AddLogAsync(userId, userName, action, "Ruhsat", description, ip);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetByStatus(string status)
+        {
+            if (string.IsNullOrWhiteSpace(status) || status == "all")
+            {
+                var all = await _ruhsatService.GetAllAsync();
+                return Json(all);
+            }
+
+            bool isActive = bool.Parse(status);
+            var filtered = await _ruhsatService.GetByActiveStatusAsync(isActive);
+            return Json(filtered);
+        }
+
 
     }
 }

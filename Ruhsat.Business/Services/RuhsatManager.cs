@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
-using iText.Commons.Actions.Contexts;
-using Microsoft.EntityFrameworkCore;
-using RuhsaProject.Core.Interfaces;
+using RuhsaProject.DTOs.DashboardCardDtos;
 using RuhsaProject.Entities.Concrete;
 using RuhsatProject.Business.IServices;
 using RuhsatProject.Core.Interfaces;
 using RuhsatProject.DataAccess.Contexts;  // Add this namespace
 using RuhsatProject.DTOs.Ruhsat;
 using RuhsatProject.Entities.Concrete;
-using System.Linq.Expressions;
 
 namespace RuhsatProject.Business.Services
 {
@@ -105,7 +102,67 @@ namespace RuhsatProject.Business.Services
         {
             await _ruhsatRepository.DeleteAsync(id);
         }
-  
+        public async Task<List<RuhsatDto>> SearchAsync(string term)
+        {
+            var results = await _ruhsatRepository.SearchAsync(term);
+            return _mapper.Map<List<RuhsatDto>>(results);
+        }
+        public async Task<IList<RuhsatDto>> GetByActiveStatusAsync(bool isActive)
+        {
+            var ruhsatlar = await _ruhsatRepository.GetAllAsync(r => r.IsActive.HasValue && r.IsActive.Value == isActive);
+            return _mapper.Map<IList<RuhsatDto>>(ruhsatlar);
+        }
+
+        public async Task<List<DashboardCardDto>> GetDashboardCardsAsync()
+        {
+            var all = await _ruhsatRepository.GetAllAsync();
+            var now = DateTime.Now;
+
+            var total = all.Count;
+            var active = all.Count(x => x.IsActive.HasValue && x.IsActive.Value);
+            var passive = all.Count(x => x.IsActive.HasValue && !x.IsActive.Value);
+            var lastMonth = all.Count(x => x.CreatedDate >= now.AddMonths(-1));
+
+            return new List<DashboardCardDto>
+    {
+        new()
+        {
+            Title = "Toplam Ruhsat",
+            Value = total,
+            Icon = "ti-home",
+            BadgeColor = "primary",
+            ChangeText = $"+{total}",
+            ChangeNote = "Tüm kayıtlar"
+        },
+        new()
+        {
+            Title = "Aktif Ruhsatlar",
+            Value = active,
+            Icon = "ti-check",
+            BadgeColor = "success",
+            ChangeText = $"+{active}",
+            ChangeNote = "Aktif durumda"
+        },
+        new()
+        {
+            Title = "Pasif Ruhsatlar",
+            Value = passive,
+            Icon = "ti-x",
+            BadgeColor = "danger",
+            ChangeText = $"-{passive}",
+            ChangeNote = "Pasif durumda"
+        },
+        new()
+        {
+            Title = "Son 1 Ayda Eklenen",
+            Value = lastMonth,
+            Icon = "ti-calendar",
+            BadgeColor = "info",
+            ChangeText = $"+{lastMonth}",
+            ChangeNote = "Son 30 gün"
+        }
+    };
+        }
 
 
     }

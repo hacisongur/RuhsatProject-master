@@ -54,6 +54,19 @@ namespace RuhsatProject.DataAccess.EntityFramework.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Ruhsat>> SearchAsync(string term)
+        {
+            return await _context.Ruhsatlar
+                .Include(r => r.FaaliyetKonusu)
+                .Include(r => r.RuhsatTuru)
+                .Include(r => r.RuhsatSinifi)
+                .Where(r =>
+                    (!string.IsNullOrEmpty(r.TcKimlikNo) && EF.Functions.Like(r.TcKimlikNo, $"%{term}%")) ||
+                    (!string.IsNullOrEmpty(r.Adi) && EF.Functions.Like(r.Adi, $"%{term}%")) ||
+                    (!string.IsNullOrEmpty(r.Soyadi) && EF.Functions.Like(r.Soyadi, $"%{term}%"))
+                )
+                .ToListAsync();
+        }
 
         public async Task DeleteAsync(int id)
         {
@@ -64,5 +77,16 @@ namespace RuhsatProject.DataAccess.EntityFramework.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<List<Ruhsat>> GetAllAsync(Expression<Func<Ruhsat, bool>> predicate)
+        {
+            return await _context.Ruhsatlar
+                .Include(r => r.FaaliyetKonusu)
+                .Include(r => r.RuhsatTuru)
+                .Include(r => r.RuhsatSinifi)
+                .Where(predicate)
+                .ToListAsync();
+        }
+
+
     }
 }
