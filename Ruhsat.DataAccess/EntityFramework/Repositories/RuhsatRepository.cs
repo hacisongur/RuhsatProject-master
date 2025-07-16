@@ -86,6 +86,7 @@ namespace RuhsatProject.DataAccess.EntityFramework.Repositories
                 .Where(predicate)
                 .ToListAsync();
         }
+      
 
 
     }

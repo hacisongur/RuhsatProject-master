@@ -4,7 +4,6 @@
 }
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="utf-8" />
     <title>Ruhsat Belgesi</title>
@@ -20,24 +19,29 @@
         }
 
         .wrapper {
-            width: 764px;
-            height: 1093px;
-            padding: 40px 25px 25px 25px;
-            border: 6px solid #1d4ea4;
+            width: 100%;
+            max-width: 764px;
+            height: 1050px; /* Footer ve çerçeveye göre ayarlandı */
+            margin: 0 auto;
+            padding: 25px;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
-
         .footer {
-            position: relative;
-            font-size: 12px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            font-size: 14px;
             font-weight: bold;
             color: #000;
             font-family: 'Arial', sans-serif;
             text-align: left;
-            margin: 0; /* Boşlukları kaldırdık */
+            margin: 0;
+            padding: 0 4px 4px 4px;
+            box-sizing: border-box;
         }
-
-
 
         .header {
             display: flex;
@@ -121,11 +125,12 @@
             position: relative;
             width: 100%;
             text-align: right;
-            margin-top: 130px; /* ✅ 250 yerine 130 */
-            margin-bottom: 20px;
+            margin-top: 130px; /* :white_check_mark: 250 yerine 130 */
+            margin-bottom: 40px;
             padding-right: 40px;
+            padding-bottom: 20px;
+            box-sizing: border-box;
         }
-
 
         .signature-name {
             font-size: 13pt;
@@ -145,161 +150,198 @@
             font-size: 12pt;
         }
 
+        .outer-border {
+            width: 100%;
+            max-width: 790px;
+            min-height: 1103px;
+            height: 1103px;
+            margin: 0 auto;
+            padding: 0;
+            border: 1px solid #1D4EA4;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-border {
+            flex: 1 1 0;
+            padding: 2px;
+            border: 9px solid #1D4EA4;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .inner-border {
+            flex: 1 1 0;
+            padding: 2px;
+            border: 1px solid #1D4EA4;
+            box-sizing: border-box;
+            position: relative;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+
     </style>
 </head>
-
 <body>
-    <div class="wrapper">
-        <div class="header">
-            <img src="@($"{Context.Request.Scheme}://{Context.Request.Host}/img/logo-2.png")" class="logo" alt="Logo" />
-            <div class="header-text">
-                <br />
-                T.C. <br />
-                BATMAN <br />
-                BELEDİYE BAŞKANLIĞI
-            </div>
-        </div>
-
-        <div class="main-title">
-            İŞYERİ AÇMA VE ÇALIŞMA RUHSATI
-        </div>
-
-        @if (!string.IsNullOrEmpty(Model.PhotoPath))
-        {
-            <img class="photo" src="@Model.PhotoPath" alt="Fotoğraf" />
-        }
-
-        <table class="content-table">
-            <tr>
-                <td class="label">T.C. Kimlik No</td>
-                <td>: @Model.TcKimlikNo</td>
-            </tr>
-            <tr>
-                <td class="label">Adı Soyadı</td>
-                <td>: @Model.Adi @Model.Soyadi</td>
-            </tr>
-            <tr>
-                <td class="label">İşyeri Ünvanı</td>
-                <td>: @Model.IsyeriUnvani</td>
-            </tr>
-            <tr>
-                <td class="label">Faaliyet Konusu</td>
-                <td>: @Model.FaaliyetKonusu?.Name</td>
-            </tr>
-            <tr>
-                <td class="label">İşyerinin Adresi</td>
-                <td>: @Model.Adres</td>
-            </tr>
-        </table>
-
-        <table class="row-three-cols" style="width: 100%; table-layout: fixed;">
-            <tr>
-                <td style="white-space: nowrap; width: 45%; padding-right: 20px;">
-                    <strong>İşyerinin Bulunduğu Yer Ada No :</strong> @Model.Ada
-                </td>
-                <td style="white-space: nowrap; width: 27.5%; padding-right: 20px;">
-                    <strong>Pafta :</strong> @Model.Pafta
-                </td>
-                <td style="white-space: nowrap; width: 27.5%;">
-                    <strong>Parsel :</strong> @Model.Parsel
-                </td>
-            </tr>
-        </table>
-
-
-        <table class="content-table">
-            <tr>
-                <td class="label">İşyeri Sınıfı </td>
-                <td>
-                    : @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
-                    {
-                        <text>@Model.RuhsatSinifi?.Name</text>
-                    }
-                                        else
-                    {
-                        <text>….sınıf</text>
-                    }
-
-                    &nbsp;&nbsp;&nbsp;&nbsp;@Model.RuhsatTuru?.Name (X)
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    @if (Model.RuhsatTuru?.Name == "Sıhhi Müessese")
-                    {
-                        <text>Sıhhi Müessese (X)</text>
-                    }
-                    else
-                    {
-                        <text>Sıhhi Müessese ( )</text>
-                    }
-                </td>
-            </tr>
-        </table>
-        @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese" && !string.IsNullOrWhiteSpace(Model.RuhsatSinifi?.Name))
-        {
-            if (Model.DepoBilgileri != null && Model.DepoBilgileri.Any())
-            {
-                var depoGruplari = Model.DepoBilgileri
-                .Select((d, i) => $"{i + 1}.Depo: {d.Bilgi} m&#179;")
-                .Chunk(3)
-                .Select(grup => string.Join("&nbsp;&nbsp;&nbsp;&nbsp;", grup))
-                .ToList();
-
-                <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #000; line-height: 1.6;">
-                    <div>
-                        İşyerinde yanıcı ve parlayıcı madde kategorisindeki sıvıların depolanması amacıyla
-                        bulunacak depoların hacmi*:
-                        @Html.Raw(depoGruplari.FirstOrDefault())
+    <div class="outer-border">
+        <div class="main-border">
+            <div class="inner-border">
+                <div class="wrapper">
+                    <div class="header">
+                        <img src="@($"{Context.Request.Scheme}://{Context.Request.Host}/img/logo-2.png")" class="logo" alt="Logo" />
+                        <div class="header-text">
+                            <br />
+                            T.C. <br />
+                            BATMAN <br />
+                            BELEDİYE BAŞKANLIĞI
+                        </div>
                     </div>
-                    @foreach (var satir in depoGruplari.Skip(1))
+                    <div class="main-title">
+                        İŞYERİ AÇMA VE ÇALIŞMA RUHSATI
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.PhotoPath))
                     {
-                        <div>@Html.Raw(satir)</div>
+                        <img class="photo" src="@Model.PhotoPath" alt="Fotoğraf" />
+                    }
+                    <table class="content-table">
+                        <tr>
+                            <td class="label">T.C. Kimlik No</td>
+                            <td>: @Model.TcKimlikNo</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Adı Soyadı</td>
+                            <td>: @Model.Adi @Model.Soyadi</td>
+                        </tr>
+                        <tr>
+                            <td class="label">İşyeri Ünvanı</td>
+                            <td>: @Model.IsyeriUnvani</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Faaliyet Konusu</td>
+                            <td>: @Model.FaaliyetKonusu?.Name</td>
+                        </tr>
+                        <tr>
+                            <td class="label">İşyerinin Adresi</td>
+                            <td>: @Model.Adres</td>
+                        </tr>
+                    </table>
+                    <table class="row-three-cols" style="width: 100%; table-layout: fixed;">
+                        <tr>
+                            <td style="white-space: nowrap; width: 45%; padding-right: 20px;">
+                                <strong>İşyerinin Bulunduğu Yer Ada No :</strong> @Model.Ada
+                            </td>
+                            <td style="white-space: nowrap; width: 27.5%; padding-right: 20px;">
+                                <strong>Pafta :</strong> @Model.Pafta
+                            </td>
+                            <td style="white-space: nowrap; width: 27.5%;">
+                                <strong>Parsel :</strong> @Model.Parsel
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="content-table">
+                        <tr>
+                            <td class="label">İşyeri Sınıfı </td>
+                            <td>
+                                : @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
+                                {
+                                    <text>@Model.RuhsatSinifi?.Name</text>
+                                }
+                                 else
+                                {
+                                    <text>….sınıf</text>
+                                }
+                                <text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                                @* Boşluk HTML olarak dışarıda tutuldu *@
+
+                                @if (Model.RuhsatTuru?.Name == "Sıhhi Müessese")
+                                {
+                                    <text>
+                                        <span style="display: inline-block; text-align: center;">Umuma Açık Müessese ()</span>
+                                        <span style="display: inline-block; margin-left: 40px;">Sıhhi Müessese (X)</span>
+                                    </text>
+                                }
+                                else
+                                {
+                                    <text>
+                                        @Model.RuhsatTuru?.Name (X)
+                                        <text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                                        Sıhhi Müessese ( )
+                                    </text>
+                                }
+
+
+                            </td>
+                        </tr>
+                    </table>
+
+                    @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese" && !string.IsNullOrWhiteSpace(Model.RuhsatSinifi?.Name))
+                    {
+                        if (Model.DepoBilgileri != null && Model.DepoBilgileri.Any())
+                        {
+                            var depoGruplari = Model.DepoBilgileri
+                            .Select((d, i) => $"{i + 1}.Depo: {d.Bilgi} m&#179;")
+                            .Chunk(3)
+                            .Select(grup => string.Join("&nbsp;&nbsp;&nbsp;&nbsp;", grup))
+                            .ToList();
+                            <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #000; line-height: 1.6;">
+                                <div>
+                                    İşyerinde yanıcı ve parlayıcı madde kategorisindeki sıvıların depolanması amacıyla
+                                    bulunacak depoların hacmi*:
+                                    @Html.Raw(depoGruplari.FirstOrDefault())
+                                </div>
+                                @foreach (var satir in depoGruplari.Skip(1))
+                                {
+                                    <div>@Html.Raw(satir)</div>
+                                }
+                            </div>
+                        }
+                        <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #000; white-space: normal; word-break: break-word; line-height: 1.6;">
+                            <strong>İşyerinde yanıcı ve parlayıcı madde kategorisindeki sıvılardan depolanmasına izin verilenlerin sınıfı/sınıfları*:</strong>
+                            &nbsp;I. Sınıf Benzin, II. Sınıf Motorin, LPG Otogaz
+                        </div>
+                    }
+                    <br />
+                    <br />
+                    <table style="width: 100%; table-layout: fixed; margin-top: 4px;">
+                        <tr>
+                            <td style="white-space: nowrap; text-align: left; font-size: 17px; padding: 0;">
+                                <span style="font-weight: bold;">Ruhsat Tarihi :</span> @Model.VerilisTarihi.ToString("dd.MM.yyyy")
+                                &nbsp;&nbsp;-&nbsp;&nbsp;
+                                <span style="font-weight: bold;">Ruhsat No :</span> @Model.RuhsatNo
+                            </td>
+                        </tr>
+                    </table>
+                    
+                 
+                </div>
+                <div class="footer">
+                    <div class="signature-block">
+                        <div class="signature-name">
+                            Mustafa Caner CULUKAR
+                        </div>
+                        <div class="signature-title-main">
+                            Başkan a.
+                        </div>
+                        <div class="signature-title-sub">
+                            Belediye Başkan Yardımcısı
+                        </div>
+                    </div>
+                    14/07/2005 Tarihli ve 2005/9207 Sayılı Bakanlar Kurulu Kararı ile yürürlüğe konulan
+                    İşyeri Açma ve Çalışma Ruhsatlarına İlişkin Yönetmelik kapsamında düzenlenmiştir.
+                    @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
+                    {
+                        <div>
+                            * Akaryakıt, sıvılaştırılmış petrol gazı, sıvılaştırılmış doğal gaz ve sıkıştırılmış doğal gaz istasyonu niteliğindeki işyeri için doldurulacaktır.
+                        </div>
                     }
                 </div>
-            }
-
-            <div style="margin-top: 10px; font-size: 16px; font-weight: bold; color: #000; white-space: normal; word-break: break-word; line-height: 1.6;">
-                <strong>İşyerinde yanıcı ve parlayıcı madde kategorisindeki sıvılardan depolanmasına izin verilenlerin sınıfı/sınıfları*:</strong>
-                &nbsp;I. Sınıf Benzin, II. Sınıf Motorin, LPG Otogaz
-            </div>
-        }
-
-
-
-        <br />
-        <br />
-        <table style="width: 100%; table-layout: fixed; margin-top: 4px;">
-            <tr>
-                <td style="white-space: nowrap; text-align: left; font-size: 17px; padding: 0;">
-                    <span style="font-weight: bold;">Ruhsat Tarihi :</span> @Model.VerilisTarihi.ToString("dd.MM.yyyy")
-                    &nbsp;&nbsp;-&nbsp;&nbsp;
-                    <span style="font-weight: bold;">Ruhsat No :</span> @Model.RuhsatNo
-                </td>
-            </tr>
-        </table>
-
-        <div class="signature-block">
-            <div class="signature-name">
-                Mustafa Caner CULUKAR
-            </div>
-            <div class="signature-title-main">
-                Başkan a.
-            </div>
-            <div class="signature-title-sub">
-                Belediye Başkan Yardımcısı
             </div>
         </div>
-
-        <div class="footer">
-            14/07/2005 Tarihli ve 2005/9207 Sayılı Bakanlar Kurulu Kararı ile yürürlüğe konulan
-            İşyeri Açma ve Çalışma Ruhsatlarına İlişkin Yönetmelik kapsamında düzenlenmiştir.
-        </div>
-        @if (Model.RuhsatTuru?.Name == "Gayrisıhhi Müessese")
-        {
-            <div class="footer">
-                * Akaryakıt, sıvılaştırılmış petrol gazı, sıvılaştırılmış doğal gaz ve sıkıştırılmış doğal gaz istasyonu niteliğindeki işyeri için doldurulacaktır.
-            </div>
-        }
-
-
     </div>
 </body>
 </html>

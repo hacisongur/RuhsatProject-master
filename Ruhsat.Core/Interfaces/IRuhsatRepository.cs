@@ -14,6 +14,5 @@ namespace RuhsatProject.Core.Interfaces
         Task<List<Ruhsat>> SearchAsync(string term);
         Task<List<Ruhsat>> GetAllAsync(Expression<Func<Ruhsat, bool>> predicate);
 
-
     }
 }

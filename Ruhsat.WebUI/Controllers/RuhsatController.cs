@@ -345,6 +345,7 @@ namespace RuhsatProject.WebUI.Controllers
             var filtered = await _ruhsatService.GetByActiveStatusAsync(isActive);
             return Json(filtered);
         }
+ 
 
 
     }
